@@ -40,9 +40,7 @@ import static java.lang.Math.abs;
  */
 
 
-public abstract class ICE_Controls extends LinearOpMode {
-
-
+public abstract class ICE_Controls<TODO> extends LinearOpMode {
 
 
     //Initialize and instantiate vuforia variables
@@ -71,9 +69,20 @@ public abstract class ICE_Controls extends LinearOpMode {
     protected Acceleration gravity;
 
 
+    //TODO Add public methods here ie. public void gyroDrive
+
+    public void gyroDrive(double speed, double distance, double heading, double timeout) {
+
+
+    }
+
+    public void gyroTurn(double speed, double heading, double timeout) {
+
+
+    }
+
+    public void gyroHold(double speed, double heading, double holdTime) {
+
+
+    }
 }
-
-
-
-
-

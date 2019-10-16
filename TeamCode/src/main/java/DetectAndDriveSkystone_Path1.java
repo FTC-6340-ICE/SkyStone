@@ -1,4 +1,20 @@
-;/* Copyright (c) 2017 FIRST. All rights reserved.
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
+import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+import org.firstinspires.ftc.teamcode.ICE_Controls;
+
+import java.sql.Driver;
+import java.util.List;
+
+;
+/* Copyright (c) 2017 FIRST. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted (subject to the limitations in the disclaimer below) provided that
@@ -27,24 +43,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 //import all assets neccesary//
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
-import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
-import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
-import org.firstinspires.ftc.teamcode.ICE_Controls;
-
-import java.util.List;
 //name of program that shows up on phone,group linear of iterative//
-@Autonomous(name="DetectAndDriveToSkyStoneWithGyro", group="Linear Opmode")
+@Autonomous(name="DetectAndDriveSkystone_Path1", group="Linear Opmode")
 //@Disabled
-public class DetectAndDriveToSkyStoneV2 extends ICE_Controls {
+public class DetectAndDriveSkystone_Path1 extends ICE_Controls {
 
     private ElapsedTime runtime = new ElapsedTime();
     @Override
@@ -81,11 +84,20 @@ public class DetectAndDriveToSkyStoneV2 extends ICE_Controls {
 
         //If opmode is active,turn until you find stone or skystone//
         if (opModeIsActive()) {
+            double TURN_SPEED=1.0;
+            double DRIVE_SPEED=0.7;
+
+            gyroHold(TURN_SPEED,0,2);
+            gyroDrive(DRIVE_SPEED,12,0);
+            gyroTurn(TURN_SPEED,90,5);
+            gyroHold(TURN_SPEED,90,1);
+            gyroDrive(DRIVE_SPEED,15,90);
+            gyroTurn(TURN_SPEED,0, 5);
+            gyroHold(TURN_SPEED,0,1);
+            //gyroDrive(DRIVE_SPEED,8,0);
+
+
             while (opModeIsActive()) {
-                //gyroDrive(0.2,0.1,0,5);
-                currentAngle = currentAngle + 10;
-                gyroTurn(0.5, currentAngle ,2);
-                //gyroHold(0.5, currentAngle ,5);
                 Recognition stonerecognition = null;
                 boolean skystoneFound = false;
                 //keep attempting to find stone//
@@ -126,8 +138,14 @@ public class DetectAndDriveToSkyStoneV2 extends ICE_Controls {
                     }
                 }
                 if (skystoneFound) {
+//shows us angle to turn to//
+                    double angleToTurnTo = -1 * stonerecognition.estimateAngleToObject(AngleUnit.DEGREES);
                     telemetry.addData(">", "Skystone FOUND!!!!!");
+                    telemetry.addData("AngleToTurn =",angleToTurnTo);
                     telemetry.update();
+                    sleep(5000);
+
+                    /*
 
                     float MidpointOfStone = (stonerecognition.getLeft() + stonerecognition.getRight()) / 2;
 
@@ -142,19 +160,43 @@ public class DetectAndDriveToSkyStoneV2 extends ICE_Controls {
                                  telemetry.addData(">", "right turning");
                                 telemetry.update();
                             } else {
-                                gyroDrive(DRIVE_SPEED,-2, 0.5);
+                                gyroDrive(DRIVE_SPEED,-2,0,5);
                                 telemetry.addData(">", "going forward");
                                 telemetry.update();
                                 break;
                             }
                         }
-                    }
+                */
+//turns to the angle to turn to and holds for 5 seconds
+                    TURN_SPEED=0.5;
+                gyroTurn(TURN_SPEED,angleToTurnTo,10);
+                gyroHold(TURN_SPEED,angleToTurnTo,1);
+                //Drives forward for 2 feet or one tile at the angleToTurnTo
+                gyroDrive(DRIVE_SPEED,30,angleToTurnTo);
+              servo.setPosition(1.0);
+              sleep(2000);
+              //turns -90 degrees  and holds there for 5 seconds
+              gyroDrive(DRIVE_SPEED,-30,angleToTurnTo);
+              TURN_SPEED=1.0;
+                gyroTurn(TURN_SPEED,-90,5);
+                gyroHold(TURN_SPEED,-90,1);
+                //goes Forward for 2 feet at -90
+                gyroDrive(DRIVE_SPEED,50,-90);
+               //Turns -180 and holds for 5
+               //goes forward for 1 foot
+                //turns to -90 and holds for 5
+
+
+
+
+                    break;
+                }
 
                 }
             }
         }
 
-
+//end of code
   /**
      *
      * Initialize the Vuforia localization engine.

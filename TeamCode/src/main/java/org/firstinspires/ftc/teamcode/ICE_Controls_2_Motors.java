@@ -2,37 +2,23 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.Position;
-import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
-import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaSkyStone;
-import org.firstinspires.ftc.robotcore.external.tfod.TfodSkyStone;
-
-import java.util.List;
-import java.util.Locale;
 
 import static java.lang.Math.abs;
 
@@ -41,7 +27,7 @@ import static java.lang.Math.abs;
  */
 
 
-public abstract class ICE_Controls extends LinearOpMode {
+public abstract class ICE_Controls_2_Motors extends LinearOpMode {
     //Initialize and instantiate vuforia variables
     OpenGLMatrix lastLocation = null;
     protected VuforiaLocalizer vuforia;
@@ -71,11 +57,8 @@ public abstract class ICE_Controls extends LinearOpMode {
     //ROBOT HARDWARE
     //Instantiate chassis motors
 
-    protected DcMotorEx leftMotorBack;
-    protected DcMotorEx leftMotorFront;
-    protected DcMotorEx rightMotorBack;
-    protected DcMotorEx rightMotorFront;
-
+    protected DcMotorEx leftMotor;
+    protected DcMotorEx rightMotor;
 
     //Instantiate servos
     //protected Servo ????;
@@ -92,7 +75,7 @@ public abstract class ICE_Controls extends LinearOpMode {
     protected double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_DRIVE * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
     protected double COUNTS_PER_INCH_LIFT = (COUNTS_PER_MOTOR_LIFT) / (.677 * 3.1415);
 
-    static final double     COUNTS_PER_MOTOR_REV_CORE_HEX    = 288 ;    // eg: Rev Core Hex Motor Encoder
+    static final double     COUNTS_PER_MOTOR_REV_CORE_HEX    = 1120 ;    // eg: Rev Core Hex Motor Encoder
     static final double     DRIVE_GEAR_REDUCTION_CORE_HEX    = 1 ;     // This is < 1.0 if geared UP
     static final double     WHEEL_DIAMETER_INCHES_CORE_HEX   = 3.6 ;     // For figuring circumference 3.54
     static final double     COUNTS_PER_INCH_CORE_HEX         = (COUNTS_PER_MOTOR_REV_CORE_HEX * DRIVE_GEAR_REDUCTION_CORE_HEX) /
@@ -100,11 +83,11 @@ public abstract class ICE_Controls extends LinearOpMode {
 
     // These constants define the desired driving/control characteristics
     // The can/should be tweaked to suite the specific robot drive train.
-    public final double DRIVE_SPEED = .3;     // Nominal speed for better accuracy.
+    public final double DRIVE_SPEED = .5;     // Nominal speed for better accuracy.
     public final double TURN_SPEED = .3;     // Nominal half speed for better accuracy.
 
     static final double HEADING_THRESHOLD = 2.5;      // As tight as we can make it with an integer gyro
-    static final double P_TURN_COEFF = .002;     // .02 Larger is more responsive, but also less stable
+    static final double P_TURN_COEFF = .02;     // .02 Larger is more responsive, but also less stable
     static final double P_DRIVE_COEFF = .05;     // .05 Larger is more responsive, but also less stable
 
     //
@@ -114,13 +97,10 @@ public abstract class ICE_Controls extends LinearOpMode {
     //VuforiaTrackable relicTemplate;
 
     protected void rightDrive(double power) {
-        rightMotorBack.setPower(power);
-        rightMotorFront.setPower(power);
-
+        rightMotor.setPower(power);
     }
     protected void leftDrive(double power) {
-        leftMotorBack.setPower(power);
-        leftMotorFront.setPower(power);
+        leftMotor.setPower(power);
     }
 
     protected void initializeHardware() {
@@ -131,31 +111,23 @@ public abstract class ICE_Controls extends LinearOpMode {
 
         //Initialize robot hardware
         //Begin with the chassis
-        leftMotorBack = (DcMotorEx) hardwareMap.get(DcMotor.class, "leftMotorBack");
-        leftMotorFront = (DcMotorEx) hardwareMap.get(DcMotor.class, "leftMotorFront");
-        rightMotorBack = (DcMotorEx) hardwareMap.get(DcMotor.class, "rightMotorBack");
-        rightMotorFront = (DcMotorEx) hardwareMap.get(DcMotor.class, "rightMotorFront");
+        leftMotor = (DcMotorEx) hardwareMap.get(DcMotor.class, "leftMotor");
+        rightMotor = (DcMotorEx) hardwareMap.get(DcMotor.class, "rightMotor");
 
         //Reset the encoders on the chassis to 0
-        leftMotorBack.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        leftMotorFront.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        rightMotorBack.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        rightMotorFront.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        leftMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
 
         //Set the motor modes
-        leftMotorBack.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        leftMotorFront.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        rightMotorBack.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        rightMotorFront.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        rightMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        leftMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
         //Reverse the left motor so all motors move forward when set to a positive speed.
-        leftMotorBack.setDirection(DcMotorEx.Direction.REVERSE);
-        leftMotorFront.setDirection(DcMotorEx.Direction.REVERSE);
+        leftMotor.setDirection(DcMotorEx.Direction.REVERSE);
+
         //When the motors are told to stop this makes sure you now that there stoped on the screen
-        leftMotorBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftMotorFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightMotorBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightMotorFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         //Initialize the servos
         // ??? = hardwareMap.get(Servo.class, "???");
@@ -205,30 +177,25 @@ public abstract class ICE_Controls extends LinearOpMode {
 
             // Determine new target position, and pass to motor controller
             moveCounts = (int)(distance * COUNTS_PER_INCH_CORE_HEX);
-            newLeftTarget = leftMotorBack.getCurrentPosition() + moveCounts;
-            newRightTarget = rightMotorBack.getCurrentPosition() + moveCounts;
+            newLeftTarget = leftMotor.getCurrentPosition() + moveCounts;
+            newRightTarget = rightMotor.getCurrentPosition() + moveCounts;
 
             // Set Target and Turn On RUN_TO_POSITION
-            leftMotorBack.setTargetPosition(newLeftTarget);
-            leftMotorFront.setTargetPosition(newLeftTarget);
-            rightMotorBack.setTargetPosition(newRightTarget);
+            leftMotor.setTargetPosition(newLeftTarget);
+            rightMotor.setTargetPosition(newRightTarget);
 
-            leftMotorBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            leftMotorFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-            rightMotorBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             // start motion.
             speed = Range.clip(Math.abs(speed), 0.0, 1.0);
-            leftMotorBack.setPower(speed);
-            leftMotorFront.setPower(speed);
-
-            rightMotorBack.setPower(speed);
+            leftDrive(speed);
+            rightDrive(speed);
 
             // keep looping while we are still active, and BOTH motors are running.
             /*
             while (opModeIsActive() &&
-                    (leftMotorBack.isBusy() && rightMotorBack.isBusy())) {
+                    (leftMotor.isBusy() && rightMotor.isBusy())) {
 
                 // adjust relative speed based on heading error.
                 error = getError(angle);
@@ -249,29 +216,25 @@ public abstract class ICE_Controls extends LinearOpMode {
                     rightSpeed /= max;
                 }
 
-                leftMotorBack.setPower(leftSpeed);
-                rightMotorBack.setPower(rightSpeed);
+                leftMotor.setPower(leftSpeed);
+                rightMotor.setPower(rightSpeed);
 
                 // Display drive status for the driver.
                 telemetry.addData("Err/St",  "%5.1f/%5.1f",  error, steer);
                 telemetry.addData("Target",  "%7d:%7d",      newLeftTarget,  newRightTarget);
-                telemetry.addData("Actual",  "%7d:%7d",      leftMotorBack.getCurrentPosition(),
-                        rightMotorBack.getCurrentPosition());
+                telemetry.addData("Actual",  "%7d:%7d",      leftMotor.getCurrentPosition(),
+                        rightMotor.getCurrentPosition());
                 telemetry.addData("Speed",   "%5.2f:%5.2f",  leftSpeed, rightSpeed);
                 telemetry.update();
             }*/
 
             // Stop all motion;
-            leftMotorBack.setPower(0);
-            leftMotorFront.setPower(0);
-
-            rightMotorBack.setPower(0);
+            leftDrive(0);
+            rightDrive(0);
 
             // Turn off RUN_TO_POSITION
-            leftMotorBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            leftMotorFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-            rightMotorBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
     }
 
@@ -292,28 +255,24 @@ public abstract class ICE_Controls extends LinearOpMode {
 
             // Determine new target position, and pass to motor controller
             moveCounts = (int)(distance * COUNTS_PER_INCH_CORE_HEX);
-            newLeftTarget = leftMotorBack.getCurrentPosition() + moveCounts;
-            newRightTarget = rightMotorBack.getCurrentPosition() + moveCounts;
+            newLeftTarget = leftMotor.getCurrentPosition() + moveCounts;
+            newRightTarget = rightMotor.getCurrentPosition() + moveCounts;
 
             // Set Target and Turn On RUN_TO_POSITION
-            leftMotorBack.setTargetPosition(newLeftTarget);
-            leftMotorFront.setTargetPosition(newLeftTarget);
+            leftMotor.setTargetPosition(newLeftTarget);
+            rightMotor.setTargetPosition(newRightTarget);
 
-            rightMotorBack.setTargetPosition(newRightTarget);
-
-            leftMotorBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            leftMotorFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-            rightMotorBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             // start motion.
             speed = Range.clip(Math.abs(speed), 0.0, 1.0);
-            leftMotorBack.setPower(speed);
-            rightMotorBack.setPower(speed);
+            leftDrive(speed);
+            rightDrive(speed);
 
             // keep looping while we are still active, and BOTH motors are running.
             while (opModeIsActive() &&
-                    (leftMotorBack.isBusy() && rightMotorBack.isBusy())) {
+                    (leftMotor.isBusy() && rightMotor.isBusy())) {
 
                 // adjust relative speed based on heading error.
                 error = getError(angle);
@@ -334,25 +293,25 @@ public abstract class ICE_Controls extends LinearOpMode {
                     rightSpeed /= max;
                 }
 
-                leftMotorBack.setPower(leftSpeed);
-                rightMotorBack.setPower(rightSpeed);
+                leftDrive(leftSpeed);
+                rightDrive(rightSpeed);
 
                 // Display drive status for the driver.
                 telemetry.addData("Err/St",  "%5.1f/%5.1f",  error, steer);
                 telemetry.addData("Target",  "%7d:%7d",      newLeftTarget,  newRightTarget);
-                telemetry.addData("Actual",  "%7d:%7d",      leftMotorBack.getCurrentPosition(),
-                        rightMotorBack.getCurrentPosition());
+                telemetry.addData("Actual",  "%7d:%7d",      leftMotor.getCurrentPosition(),
+                        rightMotor.getCurrentPosition());
                 telemetry.addData("Speed",   "%5.2f:%5.2f",  leftSpeed, rightSpeed);
                 telemetry.update();
             }
 
             // Stop all motion;
-            leftMotorBack.setPower(0);
-            rightMotorBack.setPower(0);
+            leftDrive(0);
+            rightDrive(0);
 
             // Turn off RUN_TO_POSITION
-            leftMotorBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            rightMotorBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
     }
 
@@ -389,18 +348,18 @@ public abstract class ICE_Controls extends LinearOpMode {
 
                 // Determine new target position, and pass to motor controller
                 moveCounts = (int) (distance * COUNTS_PER_INCH);
-                newLeftTarget = leftMotorBack.getCurrentPosition() + moveCounts;
-                newRightTarget = rightMotorBack.getCurrentPosition() + moveCounts;
+                newLeftTarget = leftMotor.getCurrentPosition() + moveCounts;
+                newRightTarget = rightMotor.getCurrentPosition() + moveCounts;
 
                 // Set Target and Turn On RUN_TO_POSITION
-                leftMotorBack.setTargetPosition(newLeftTarget);
-                rightMotorBack.setTargetPosition(newRightTarget);
+                leftMotor.setTargetPosition(newLeftTarget);
+                rightMotor.setTargetPosition(newRightTarget);
 
                 // Turn On RUN_TO_POSITION
-                leftMotorBack.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-                rightMotorBack.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-                leftMotorBack.setTargetPositionTolerance(100);
-                rightMotorBack.setTargetPositionTolerance(100);
+                leftMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+                rightMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+                leftMotor.setTargetPositionTolerance(100);
+                rightMotor.setTargetPositionTolerance(100);
                 // start motion.
                 speed = Range.clip(speed, -1.0, 1.0);
                 leftDrive(speed);
@@ -408,7 +367,7 @@ public abstract class ICE_Controls extends LinearOpMode {
 
                 double timeoutTime = runtime.seconds() + timeout;
                 // keep looping while we are still active, and BOTH motors are running.
-                while (opModeIsActive() && (leftMotorBack.isBusy() && rightMotorBack.isBusy()) && runtime.seconds() <= timeoutTime) {
+                while (opModeIsActive() && (leftMotor.isBusy() && rightMotor.isBusy()) && runtime.seconds() <= timeoutTime) {
 
                     // adjust relative speed based on heading error.
                     error = getError(heading);
@@ -435,7 +394,7 @@ public abstract class ICE_Controls extends LinearOpMode {
                     // Display drive status for the driver.
                     telemetry.addData("Err/St", "%5.1f/%5.1f", error, steer);
                     telemetry.addData("Target", "%7d:%7d", newLeftTarget, newRightTarget);
-                    telemetry.addData("Actual", "%7d:%7d", leftMotorBack.getCurrentPosition(), rightMotorBack.getCurrentPosition());
+                    telemetry.addData("Actual", "%7d:%7d", leftMotor.getCurrentPosition(), rightMotor.getCurrentPosition());
                     telemetry.addData("Speed", "%5.2f:%5.2f", leftSpeed, rightSpeed);
                     telemetry.update();
                 }
@@ -450,8 +409,8 @@ public abstract class ICE_Controls extends LinearOpMode {
         public void gyroTurn ( double speed, double heading, double timeout){
 
 //Ensure the motors are in the right configuration
-            rightMotorBack.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-            leftMotorBack.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+            rightMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+            leftMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
             double timeoutTime = runtime.seconds() + timeout;
             // keep looping while we are still active, and not on heading.

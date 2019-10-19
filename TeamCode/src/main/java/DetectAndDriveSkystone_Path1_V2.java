@@ -182,7 +182,7 @@ public class DetectAndDriveSkystone_Path1_V2 extends ICE_Controls_2_Motors {
                         //gyroHold(TURN_SPEED, angleToTurnTo, 1);
                         //Drives forward for 2 feet or one tile at the angleToTurnTo
                         gyroDrive(DRIVE_SPEED, 20, angleToTurnTo);
-                        servo.setPosition(1.0);
+                        servoleft.setPosition(1.0);
                         sleep(2000);
                         //turns -90 degrees  and holds there for 5 seconds
                         gyroDrive(DRIVE_SPEED, -25, angleToTurnTo);
@@ -194,12 +194,12 @@ public class DetectAndDriveSkystone_Path1_V2 extends ICE_Controls_2_Motors {
                         //Turns -180 and holds for 5
                         //goes forward for 1 foot
                         //turns to -90 and holds for 5
-servo.setPosition(0);
+servoleft.setPosition(0);
 gyroDrive(DRIVE_SPEED,distanceBackToCenterLine,-90);
 gyroDrive(DRIVE_SPEED,-10,-90);
-servo.setPosition(1);
+servoleft.setPosition(1);
 gyroDrive(DRIVE_SPEED,20,-90);
-servo.setPosition(0);
+servoleft.setPosition(0);
 
 
 

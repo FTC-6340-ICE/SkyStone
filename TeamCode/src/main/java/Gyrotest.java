@@ -68,14 +68,25 @@ import org.firstinspires.ftc.teamcode.ICE_Controls_2_Motors;
             //telemetry.update();
             //gyroDrive(DRIVE_SPEED,24);
 
-           telemetry.addData("Status", "G2");
-            telemetry.update();
-            double TURN_SPEED=0.8;
-gyroDrive(DRIVE_SPEED,12,0,5);
+          // telemetry.addData("Status", "G2");
+            //elemetry.update();
+            //double TURN_SPEED=0.8;
+//gyroDrive(DRIVE_SPEED,30,0);
+servoright.setPosition(0);
+servoleft.setPosition(1);
+sleep(1500);
+            servoright.setPosition(1);
+            servoleft.setPosition(0);
+            sleep(1500);
+//gyroDrive(DRIVE_SPEED,-30,0);
+            //telemetry.addData("Current Angle", imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle);
+            //telemetry.update();
+/*
 
-            telemetry.addData("Current Angle", imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle);
-            telemetry.update();
-/*            gyroHold(TURN_SPEED,0,2);
+
+
+
+            gyroHold(TURN_SPEED,0,2);
             gyroDrive(DRIVE_SPEED,12,0);
             gyroTurn(TURN_SPEED,90,5);
             gyroHold(TURN_SPEED,90,5);
@@ -121,7 +132,7 @@ gyroDrive(DRIVE_SPEED,12,0,5);
             leftMotor.setPower(0.0);
             rightMotor.setPower(0.0);
 */
-            sleep(5000);
+/*            sleep(5000);
 
             telemetry.addData("Current New Position", leftMotor.getCurrentPosition());
             telemetry.update();
@@ -133,7 +144,7 @@ gyroDrive(DRIVE_SPEED,12,0,5);
             telemetry.update();
             sleep(5000);
             //gyroDrive(0.2,10,90);
-
+*/
 
         }
     }

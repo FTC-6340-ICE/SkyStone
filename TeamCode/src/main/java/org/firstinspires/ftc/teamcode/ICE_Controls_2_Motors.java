@@ -62,7 +62,9 @@ public abstract class ICE_Controls_2_Motors extends LinearOpMode {
 
     //Instantiate servos
     //protected Servo ????;
-    protected Servo   servo;
+    protected Servo   servoleft;
+    protected Servo servoright;
+
 
     //Instantiate sensors
     //ColorSensor ?????;
@@ -75,7 +77,8 @@ public abstract class ICE_Controls_2_Motors extends LinearOpMode {
     protected double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_DRIVE * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
     protected double COUNTS_PER_INCH_LIFT = (COUNTS_PER_MOTOR_LIFT) / (.677 * 3.1415);
 
-    static final double     COUNTS_PER_MOTOR_REV_CORE_HEX    = 1120 ;    // eg: Rev Core Hex Motor Encoder
+    //static final double     COUNTS_PER_MOTOR_REV_CORE_HEX    = 1120 ;    // eg: Rev Core Hex Motor Encoder
+    static final double     COUNTS_PER_MOTOR_REV_CORE_HEX    = 560 ;    // eg: Rev Core Hex Motor Encoder
     static final double     DRIVE_GEAR_REDUCTION_CORE_HEX    = 1 ;     // This is < 1.0 if geared UP
     static final double     WHEEL_DIAMETER_INCHES_CORE_HEX   = 3.6 ;     // For figuring circumference 3.54
     static final double     COUNTS_PER_INCH_CORE_HEX         = (COUNTS_PER_MOTOR_REV_CORE_HEX * DRIVE_GEAR_REDUCTION_CORE_HEX) /
@@ -83,12 +86,12 @@ public abstract class ICE_Controls_2_Motors extends LinearOpMode {
 
     // These constants define the desired driving/control characteristics
     // The can/should be tweaked to suite the specific robot drive train.
-    public final double DRIVE_SPEED = .5;     // Nominal speed for better accuracy.
+    public final double DRIVE_SPEED = .3;     // Nominal speed for better accuracy.
     public final double TURN_SPEED = .3;     // Nominal half speed for better accuracy.
 
     static final double HEADING_THRESHOLD = 2.5;      // As tight as we can make it with an integer gyro
-    static final double P_TURN_COEFF = .02;     // .02 Larger is more responsive, but also less stable
-    static final double P_DRIVE_COEFF = .05;     // .05 Larger is more responsive, but also less stable
+    static final double P_TURN_COEFF = .002;     // .02 Larger is more responsive, but also less stable
+    static final double P_DRIVE_COEFF = .02;     // .05 Larger is more responsive, but also less stable
 
     //
 
@@ -111,8 +114,8 @@ public abstract class ICE_Controls_2_Motors extends LinearOpMode {
 
         //Initialize robot hardware
         //Begin with the chassis
-        leftMotor = (DcMotorEx) hardwareMap.get(DcMotor.class, "leftMotor");
-        rightMotor = (DcMotorEx) hardwareMap.get(DcMotor.class, "rightMotor");
+        leftMotor = (DcMotorEx) hardwareMap.get(DcMotor.class, "leftMotor0");
+        rightMotor = (DcMotorEx) hardwareMap.get(DcMotor.class, "rightMotor1");
 
         //Reset the encoders on the chassis to 0
         leftMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
@@ -131,7 +134,9 @@ public abstract class ICE_Controls_2_Motors extends LinearOpMode {
 
         //Initialize the servos
         // ??? = hardwareMap.get(Servo.class, "???");
-        servo = hardwareMap.get(Servo.class, "servo_0");
+        servoright = hardwareMap.get(Servo.class, "rightServo4");
+        servoleft = hardwareMap.get(Servo.class, "leftServo5");
+
 
         //Initialize sensors
         //??? = hardwareMap.get(ColorSensor.class, "???"); //for colorsensor

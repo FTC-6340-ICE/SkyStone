@@ -3,6 +3,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
@@ -86,7 +88,7 @@ public class DetectAndDriveSkystone_Path3_V2 extends ICE_Controls_2_Motors {
             //double DRIVE_SPEED=0.7;
 
 //            gyroHold(TURN_SPEED,0,2);
-            gyroDrive(DRIVE_SPEED,14,0);
+            gyroDrive(DRIVE_SPEED,16,0);
 
 //Fird and Move First Skystone
             while (opModeIsActive()) {
@@ -138,38 +140,41 @@ public class DetectAndDriveSkystone_Path3_V2 extends ICE_Controls_2_Motors {
                     telemetry.addData("AngleToTurnTo =", angleToTurnTo);
                     telemetry.update();
                   // sleep(1000);
-
-
+                    //double angleToAddToAngle = -1 * imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+//First thing to do tomorrow
 //turns to the angle to turn to and holds for 5 seconds
 
                     double distanceToDropOffSkystone = 0;
                     double distanceBackToCenterLine = 0;
                    double distanceBackToSecondStone = 0;
                     if(angleToTurnTo<-5){
-                        distanceToDropOffSkystone=50;
+                        distanceToDropOffSkystone=70;
                         distanceBackToCenterLine=-10;
-                        distanceBackToSecondStone=-55;
+                        distanceBackToSecondStone=-75;
                     }
                     else if(angleToTurnTo>5){
-                        distanceToDropOffSkystone=55;
+                        distanceToDropOffSkystone=75;
                         distanceBackToCenterLine=-15;
-                        distanceBackToSecondStone=-55;
+                        distanceBackToSecondStone=-75;
                     }
                     else{
-                        distanceToDropOffSkystone=50;
+                        distanceToDropOffSkystone=70;
                         distanceBackToCenterLine=-10;
-                        distanceBackToSecondStone=-55;
+                        distanceBackToSecondStone=-75;
                     }
 
                     //TURN_SPEED = 0.5;
                         gyroDrive(DRIVE_SPEED, 20, angleToTurnTo);
-                        servo.setPosition(1.0);
+                        servoleft.setPosition(0.0);
+                        servoright.setPosition(1.0);
                         sleep(1500);
                         //turns -90 degrees  and holds there for 5 seconds
                         gyroDrive(DRIVE_SPEED, -25, angleToTurnTo);
                         //TURN_SPEED = 1.0;
                         gyroDrive(DRIVE_SPEED,distanceToDropOffSkystone, -90);
-                        servo.setPosition(0);
+                        servoleft.setPosition(1.0);
+                   servoright.setPosition(0.0);
+
                      //TURN_SPEED=1.0;
                         gyroDrive(DRIVE_SPEED,distanceBackToSecondStone,-90);
                         gyroTurn(TURN_SPEED,0,5);
@@ -254,13 +259,17 @@ public class DetectAndDriveSkystone_Path3_V2 extends ICE_Controls_2_Motors {
 
                     //TURN_SPEED = 0.5;
                     gyroDrive(DRIVE_SPEED, 20, angleToTurnTo);
-                    servo.setPosition(1.0);
+                    servoleft.setPosition(0.0);
+                    servoright.setPosition(1.0);
+
                     sleep(1500);
                     //turns -90 degrees  and holds there for 5 seconds
                     gyroDrive(DRIVE_SPEED, -25, angleToTurnTo);
                     //TURN_SPEED = 1.0;
                     gyroDrive(DRIVE_SPEED,distanceToDropOffSkystone, -90);
-                    servo.setPosition(0);
+                    servoleft.setPosition(1.0);
+                    servoright.setPosition(0.0);
+
                     //TURN_SPEED=1.0;
                     gyroDrive(DRIVE_SPEED,distanceBackToCenterLine,-90);
                     //gyroTurn(TURN_SPEED,0,5);

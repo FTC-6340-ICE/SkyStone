@@ -47,13 +47,23 @@ import java.util.List;
 //name of program that shows up on phone,group linear of iterative//
 @Autonomous(name="DetectAndDriveSkystone_Path3_V2", group="Linear Opmode")
 //@Disabled
-public class DetectAndDriveSkystone_Path3_V2 extends ICE_Controls_2_Motors {
+public abstract class DetectAndDriveSkystone_Path3_V2 extends ICE_Controls_2_Motors {
 
+    public DetectAndDriveSkystone_Path3_V2(int TeamColor)
+    {
+       super();
+       teamColor = TeamColor;
+    }
     private ElapsedTime runtime = new ElapsedTime();
+    //if(public int ElapsedTime)
+    //teamColor  = 1 for Red an -1 or Blue team
+    private int teamColor;
+    private final double SKYSTONE_DETECT_MAX_TIME_SECONDS = 7.0;
     @Override
 //what shows up on your phone//
     public void runOpMode() {
         initializeHardware();
+        //servoleft.setPosition(0.5);
         telemetry.addData("On Our Way To the Stone", "SkyStone");
         telemetry.update();
         // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
@@ -88,196 +98,197 @@ public class DetectAndDriveSkystone_Path3_V2 extends ICE_Controls_2_Motors {
             //double DRIVE_SPEED=0.7;
 
 //            gyroHold(TURN_SPEED,0,2);
-            gyroDrive(DRIVE_SPEED,16,0);
+            gyroDrive(DRIVE_SPEED,23,0);
+
+           // CameraDevice.getInstance().setFlashTorchMode(true);
+            ElapsedTime timeToLookForSkyStone = new ElapsedTime();
+            timeToLookForSkyStone.reset();
 
 //Fird and Move First Skystone
             while (opModeIsActive()) {
-                Recognition stonerecognition = null;
-                boolean skystoneFound = false;
-                //keep attempting to find stone//
-               /* if (tfod != null) {
-                    // getUpdatedRecognitions() will return null if no new information is available since
-                    // the last time that call was made.
-                    List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-//If you find stone then say on DS Object detected//
-                    if (updatedRecognitions != null) {
-                        telemetry.addData("# Object Detected", updatedRecognitions.size());
-
-                        // step through the list of recognitions and display boundary info.
-                        int i = 0;
-                        for (Recognition recognition : updatedRecognitions) {
-                            telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
-                            telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
-                                    recognition.getLeft(), recognition.getTop());
-                            telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
-                                    recognition.getRight(), recognition.getBottom());
-                        }
-                        telemetry.update();
-                        //Found Object.....Now break the while loop
-                        skystoneFound = false;
-
-                        if (updatedRecognitions.size() > 0) {
-                            for (Recognition recognition : updatedRecognitions) {
-                                if (recognition.getLabel() == LABEL_SECOND_ELEMENT) {
-                                    skystoneFound = true;
-                                    stonerecognition = recognition;
-                                    break;
-                                }
-
-
-                            }
-                            //if (skystoneFound)
-                            //    break;
-                        }
-                    }
-                }*/
-               RecognizedObject recognizedObject = DetectSkyStoneAndReturnAngle();
-               if (recognizedObject.skystoneFound) {
-//shows us angle to turn to//
-                    //double angleToTurnTo = -1 * stonerecognition.estimateAngleToObject(AngleUnit.DEGREES);
-                double angleToTurnTo =-1 * recognizedObject.skystoneFoundAngle;
-                telemetry.addData(">", "Skystone FOUND!!!!!");
-                    telemetry.addData("AngleToTurnTo =", angleToTurnTo);
-                    telemetry.update();
-                  // sleep(1000);
-                    //double angleToAddToAngle = -1 * imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
-//First thing to do tomorrow
-//turns to the angle to turn to and holds for 5 seconds
-
-                    double distanceToDropOffSkystone = 0;
-                    double distanceBackToCenterLine = 0;
-                   double distanceBackToSecondStone = 0;
-                    if(angleToTurnTo<-5){
-                        distanceToDropOffSkystone=70;
-                        distanceBackToCenterLine=-10;
-                        distanceBackToSecondStone=-75;
-                    }
-                    else if(angleToTurnTo>5){
-                        distanceToDropOffSkystone=75;
-                        distanceBackToCenterLine=-15;
-                        distanceBackToSecondStone=-75;
-                    }
-                    else{
-                        distanceToDropOffSkystone=70;
-                        distanceBackToCenterLine=-10;
-                        distanceBackToSecondStone=-75;
-                    }
-
-                    //TURN_SPEED = 0.5;
-                        gyroDrive(DRIVE_SPEED, 20, angleToTurnTo);
-                        servoleft.setPosition(0.0);
-                        servoright.setPosition(1.0);
-                        sleep(1500);
-                        //turns -90 degrees  and holds there for 5 seconds
-                        gyroDrive(DRIVE_SPEED, -25, angleToTurnTo);
-                        //TURN_SPEED = 1.0;
-                        gyroDrive(DRIVE_SPEED,distanceToDropOffSkystone, -90);
-                        servoleft.setPosition(1.0);
-                   servoright.setPosition(0.0);
-
-                     //TURN_SPEED=1.0;
-                        gyroDrive(DRIVE_SPEED,distanceBackToSecondStone,-90);
-                        gyroTurn(TURN_SPEED,0,5);
-                        gyroDrive(DRIVE_SPEED,3,0);
-                    break;
-
-               }
-            }
-
-//Find and Move Second Skystone
-            while (opModeIsActive()) {
-                Recognition stonerecognition = null;
-                boolean skystoneFound = false;
-                //keep attempting to find stone//
-               /* if (tfod != null) {
-                    // getUpdatedRecognitions() will return null if no new information is available since
-                    // the last time that call was made.
-                    List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-//If you find stone then say on DS Object detected//
-                    if (updatedRecognitions != null) {
-                        telemetry.addData("# Object Detected", updatedRecognitions.size());
-
-                        // step through the list of recognitions and display boundary info.
-                        int i = 0;
-                        for (Recognition recognition : updatedRecognitions) {
-                            telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
-                            telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
-                                    recognition.getLeft(), recognition.getTop());
-                            telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
-                                    recognition.getRight(), recognition.getBottom());
-                        }
-                        telemetry.update();
-                        //Found Object.....Now break the while loop
-                        skystoneFound = false;
-
-                        if (updatedRecognitions.size() > 0) {
-                            for (Recognition recognition : updatedRecognitions) {
-                                if (recognition.getLabel() == LABEL_SECOND_ELEMENT) {
-                                    skystoneFound = true;
-                                    stonerecognition = recognition;
-                                    break;
-                                }
-
-
-                            }
-                            //if (skystoneFound)
-                            //    break;
-                        }
-                    }
-                }*/
                 RecognizedObject recognizedObject = DetectSkyStoneAndReturnAngle();
-                if (recognizedObject.skystoneFound) {
+                if ((recognizedObject.skystoneFound)||(timeToLookForSkyStone.seconds()> SKYSTONE_DETECT_MAX_TIME_SECONDS)) {
 //shows us angle to turn to//
-                    //double angleToTurnTo = -1 * stonerecognition.estimateAngleToObject(AngleUnit.DEGREES);
-                    double angleToTurnTo =-1 * recognizedObject.skystoneFoundAngle;
+                    double angleToTurnTo;
+                    if(recognizedObject.skystoneFound) {
+                        angleToTurnTo = -1 * recognizedObject.skystoneFoundAngle;
+                    }
+                    else
+                    {
+                        angleToTurnTo = 0;
+                    }
                     telemetry.addData(">", "Skystone FOUND!!!!!");
                     telemetry.addData("AngleToTurnTo =", angleToTurnTo);
                     telemetry.update();
-                   // sleep(1000);
-
-
-//turns to the angle to turn to and holds for 5 seconds
+                   //sleep(3000);
+                    double angleToAddToAngle = -1 * imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+                    angleToTurnTo -= angleToAddToAngle;
 
                     double distanceToDropOffSkystone = 0;
                     double distanceBackToCenterLine = 0;
                     double distanceBackToSecondStone = 0;
                     if(angleToTurnTo<-5){
-                        distanceToDropOffSkystone=55;
+                        distanceToDropOffSkystone=46;
                         distanceBackToCenterLine=-10;
-                        distanceBackToSecondStone=-50;
+                        distanceBackToSecondStone=-63;
+                        angleToTurnTo -= 4;
                     }
                     else if(angleToTurnTo>5){
-                        distanceToDropOffSkystone=60;
+                        distanceToDropOffSkystone=51;
                         distanceBackToCenterLine=-15;
+                        distanceBackToSecondStone=-68;
+                        angleToTurnTo += 4;
+
+                    }
+
+                    else{
+                        distanceToDropOffSkystone=46;
+                        distanceBackToCenterLine=-10;
+                        distanceBackToSecondStone=-63;
+                    }
+
+                    telemetry.addData(">", "Skystone FOUND!!!!!");
+                    telemetry.addData("NEW AngleToTurnTo =", angleToTurnTo);
+                    telemetry.update();
+                    //sleep(3000);
+
+                    gyroTurn(TURN_SPEED,angleToTurnTo,5);
+                    gyroHold(DRIVE_SPEED,angleToTurnTo,0.5);
+                   //servoleft.setPosition(0.3);
+                   //sleep(1000);
+                    gyroDrive(DRIVE_SPEED, 28, angleToTurnTo,5);
+                   // servoleft.setPosition(0.5);
+                    //sleep(1000);
+                    //gyroDrive(DRIVE_SPEED, 8, angleToTurnTo,5);
+
+                    servoleft.setPosition(0.25);
+                    servoright.setPosition(1.0);
+                    sleep(1000);
+                    if(servoleft.getPosition() >0.25)
+                    {
+                        servoleft.setPosition(servoleft.getPosition() +0.02);
+                        sleep(1000);
+                    }
+
+                    gyroDrive(DRIVE_SPEED, -28, angleToTurnTo,5);
+                    //turning right
+                    gyroTurn(TURN_SPEED,-90*teamColor,5);
+                    gyroHold(DRIVE_SPEED,-90*teamColor,0.5);
+                    gyroDrive(DRIVE_SPEED,distanceToDropOffSkystone, -90*teamColor,5);
+
+                    //Put's servo up to deliver stone
+                    servoleft.setPosition(1.0);
+                    servoright.setPosition(0.0);
+                    sleep(1000);
+
+                    gyroDrive(0.8,distanceBackToSecondStone,-90*teamColor);
+                    gyroTurn(TURN_SPEED,0,5);
+                    gyroHold(TURN_SPEED,0,0.5);
+                    gyroDrive(DRIVE_SPEED,5,0);
+                    break;
+
+               }
+            }
+
+            timeToLookForSkyStone.reset();
+//Find and Move Second Skystone
+            while (opModeIsActive()) {
+                //keep attempting to find stone//
+                RecognizedObject recognizedObject = DetectSkyStoneAndReturnAngle();
+                if (recognizedObject.skystoneFound||(timeToLookForSkyStone.seconds()> SKYSTONE_DETECT_MAX_TIME_SECONDS)) {
+//shows us angle to turn to//
+                    //double angleToTurnTo = -1 * stonerecognition.estimateAngleToObject(AngleUnit.DEGREES);
+                    double angleToTurnTo;
+                    if(recognizedObject.skystoneFound) {
+                        angleToTurnTo = -1 * recognizedObject.skystoneFoundAngle;
+                    }
+                    else
+                    {
+                        angleToTurnTo = 0;
+                    }
+                    telemetry.addData(">", "Skystone FOUND!!!!!");
+                    telemetry.addData("AngleToTurnTo =", angleToTurnTo);
+                    telemetry.update();
+                   // sleep(1000);
+                    double angleToAddToAngle = -1 * imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+                    angleToTurnTo -= angleToAddToAngle;
+
+                    double distanceToDropOffSkystone = 0;
+                    double distanceBackToCenterLine = 0;
+                    double distanceBackToSecondStone = 0;
+                    if(angleToTurnTo<-5){
+                        distanceToDropOffSkystone=73;
+                        distanceBackToCenterLine=-15;
+                        distanceBackToSecondStone=-50;
+                        angleToTurnTo -= 4;
+                        if(teamColor==-1)
+                            angleToTurnTo = 30*teamColor;
+
+                    }
+                    else if(angleToTurnTo>5){
+                        distanceToDropOffSkystone=78;
+                        distanceBackToCenterLine=-18;
                         distanceBackToSecondStone=-55;
+                        angleToTurnTo += 4;
+                        if(teamColor==1)
+                            angleToTurnTo = 30*teamColor;
+
                     }
                     else{
-                        distanceToDropOffSkystone=55;
-                        distanceBackToCenterLine=-10;
+                        distanceToDropOffSkystone=73;
+                        distanceBackToCenterLine=-15;
                         distanceBackToSecondStone=-50;
                     }
 
-                    //TURN_SPEED = 0.5;
-                    gyroDrive(DRIVE_SPEED, 20, angleToTurnTo);
-                    servoleft.setPosition(0.0);
+                    /*
+                    if(angleToTurnTo<-5) {
+                        gyroTurn(TURN_SPEED,angleToTurnTo,5);
+                        gyroHold(DRIVE_SPEED,angleToTurnTo,0.5);
+
+                        gyroDrive(DRIVE_SPEED, 8, angleToTurnTo,5);
+                        gyroTurn(TURN_SPEED,0,5);
+                        gyroHold(DRIVE_SPEED,0,0.5);
+                        angleToTurnTo =0;
+                    }
+                    else {
+                        //TURN_SPEED = 0.5;
+                        gyroTurn(TURN_SPEED, angleToTurnTo, 5);
+                        gyroHold(DRIVE_SPEED, angleToTurnTo, 0.5);
+                    }*/
+                    gyroTurn(TURN_SPEED, angleToTurnTo, 5);
+                    gyroHold(DRIVE_SPEED, angleToTurnTo, 0.5);
+
+                    gyroDrive(DRIVE_SPEED, 25, angleToTurnTo,5);
+                    servoleft.setPosition(0.25);
                     servoright.setPosition(1.0);
 
-                    sleep(1500);
+                    sleep(1000);
+                    if(servoleft.getPosition() >0.25)
+                    {
+                        servoleft.setPosition(servoleft.getPosition() +0.01);
+                        sleep(1000);
+                    }
                     //turns -90 degrees  and holds there for 5 seconds
-                    gyroDrive(DRIVE_SPEED, -25, angleToTurnTo);
-                    //TURN_SPEED = 1.0;
-                    gyroDrive(DRIVE_SPEED,distanceToDropOffSkystone, -90);
+                    gyroDrive(DRIVE_SPEED, -23, angleToTurnTo,5);
+                    //turning right
+                    gyroTurn(TURN_SPEED,-90*teamColor,5);
+                    gyroHold(DRIVE_SPEED,-90*teamColor,0.5);
+
+                    gyroDrive(DRIVE_SPEED,distanceToDropOffSkystone, -90*teamColor,5);
+                    //Put's servo up to deliver stone
                     servoleft.setPosition(1.0);
                     servoright.setPosition(0.0);
-
+                    sleep(1000);
                     //TURN_SPEED=1.0;
-                    gyroDrive(DRIVE_SPEED,distanceBackToCenterLine,-90);
+                    gyroDrive(1.0,distanceBackToCenterLine,-90*teamColor,5);
                     //gyroTurn(TURN_SPEED,0,5);
                     //gyroDrive(DRIVE_SPEED,5,0);
                     break;
 
                 }
             }
+            //CameraDevice.getInstance().setFlashTorchMode(false);
+
         }
     }
 
@@ -358,7 +369,7 @@ public class DetectAndDriveSkystone_Path3_V2 extends ICE_Controls_2_Motors {
         int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
                 "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-        tfodParameters.minimumConfidence = 0.8;
+        tfodParameters.minimumConfidence = 0.7;
         //what shows on screen//
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);

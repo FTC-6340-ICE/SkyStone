@@ -86,13 +86,14 @@ public abstract class ICE_Controls_2_Motors extends LinearOpMode {
 
     // These constants define the desired driving/control characteristics
     // The can/should be tweaked to suite the specific robot drive train.
-    public final double DRIVE_SPEED = .3;     // Nominal speed for better accuracy.
+    public final double DRIVE_SPEED = .6;     // Nominal speed for better accuracy.
     public final double TURN_SPEED = .3;     // Nominal half speed for better accuracy.
 
     static final double HEADING_THRESHOLD = 2.5;      // As tight as we can make it with an integer gyro
-    static final double P_TURN_COEFF = .002;     // .02 Larger is more responsive, but also less stable
+    static final double P_TURN_COEFF = .02;     // .02 Larger is more responsive, but also less stable
     static final double P_DRIVE_COEFF = .02;     // .05 Larger is more responsive, but also less stable
 
+    static final double MIN_TURN_SPEED = .15;
     //
 
     //Initialize Vuforia variables
@@ -352,7 +353,7 @@ public abstract class ICE_Controls_2_Motors extends LinearOpMode {
             if (opModeIsActive()) {
 
                 // Determine new target position, and pass to motor controller
-                moveCounts = (int) (distance * COUNTS_PER_INCH);
+                moveCounts = (int) (distance * COUNTS_PER_INCH_CORE_HEX);
                 newLeftTarget = leftMotor.getCurrentPosition() + moveCounts;
                 newRightTarget = rightMotor.getCurrentPosition() + moveCounts;
 
@@ -502,6 +503,12 @@ public abstract class ICE_Controls_2_Motors extends LinearOpMode {
         } else {
             steer = getSteer(error, PCoeff);
             rightSpeed = Range.clip(speed * steer,-1,1);
+            if(rightSpeed>0)
+                rightSpeed = Range.clip(rightSpeed,MIN_TURN_SPEED,1);
+            else if(rightSpeed<0)
+                rightSpeed = Range.clip(rightSpeed,-1,-1*MIN_TURN_SPEED);
+
+
             leftSpeed = -rightSpeed;
         }
 

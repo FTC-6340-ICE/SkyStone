@@ -28,6 +28,7 @@
  */
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -76,7 +77,27 @@ import org.firstinspires.ftc.teamcode.ICE_Controls_2_Motors;
 //ervoleft.setPosition(1);
 //sleep(1500);
   //        servoright.setPosition(1);
-    gyroDrive(DRIVE_SPEED,12,0,5);
+    //gyroDrive(DRIVE_SPEED,12,0,5);
+
+            gyroHold(DRIVE_SPEED,0,2);
+            telemetry.addData("movecounts",leftMotor.getCurrentPosition());
+            telemetry.update();
+            sleep(5000);
+
+            gyroDrive(DRIVE_SPEED,20,0);
+            telemetry.addData("movecounts",leftMotor.getCurrentPosition());
+            telemetry.update();
+
+            sleep(5000);
+
+            gyroHold(DRIVE_SPEED,0,2);
+
+
+
+
+
+
+
             //        servoleft.setPosition(0);
     // servoleft.setPostio
       //      sleep(1500);

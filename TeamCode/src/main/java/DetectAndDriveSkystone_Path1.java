@@ -1,4 +1,5 @@
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -46,7 +47,7 @@ import java.util.List;
 
 //name of program that shows up on phone,group linear of iterative//
 @Autonomous(name="DetectAndDriveSkystone_Path1", group="Linear Opmode")
-//@Disabled
+@Disabled
 public class DetectAndDriveSkystone_Path1 extends ICE_Controls {
 
     private ElapsedTime runtime = new ElapsedTime();

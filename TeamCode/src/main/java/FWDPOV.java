@@ -1,6 +1,7 @@
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
@@ -39,11 +40,12 @@ public class FWDPOV extends ICE_Controls_2_Motors {
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
-              // Most robots need the motor on one side to be reversed to drive forward
+        // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
         leftMotor.setDirection(DcMotor.Direction.REVERSE);
         rightMotor.setDirection(DcMotor.Direction.FORWARD);
-
+        intakeMotorLeft.setDirection(DcMotor.Direction.REVERSE);
+        intakeMotorRight.setDirection(DcMotor.Direction.FORWARD);
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
@@ -58,7 +60,7 @@ public class FWDPOV extends ICE_Controls_2_Motors {
             double rightTurboPower;
 
             double turboMaxSpeed = 0.9;
-            double maxSpeed = 0.6;
+            double maxSpeed = 0.5;
             // Choose to drive using either Tank Mode, or org.firstinspires.ftc.teamcode.POV Mode
             // Comment out the method that's not used.  The default below is org.firstinspires.ftc.teamcode.POV.
 
@@ -67,28 +69,45 @@ public class FWDPOV extends ICE_Controls_2_Motors {
             double drive = -gamepad1.left_stick_y;
             double turn = gamepad1.right_stick_x;
             leftPower = Range.clip(drive + turn, -1 * maxSpeed, maxSpeed);
-            rightPower = Range.clip(drive - turn,-1 * maxSpeed, maxSpeed);
+            rightPower = Range.clip(drive - turn, -1 * maxSpeed, maxSpeed);
             leftTurboPower = Range.clip(drive + turn, -1 * turboMaxSpeed, turboMaxSpeed);
-            rightTurboPower = Range.clip(drive - turn,-1 * turboMaxSpeed, turboMaxSpeed);
+            rightTurboPower = Range.clip(drive - turn, -1 * turboMaxSpeed, turboMaxSpeed);
+
+            //  if (gamepad1.a) {
+            servoleft.setPosition(0.25);
+
+            //}
+            //if (gamepad1.b) {
+            servoleft.setPosition(1);
+
+
+            //
+
 
             if (gamepad1.a) {
-                servoleft.setPosition(0.25);
-                servoright.setPosition(1);
+                inTakeStone();
+
             }
             if (gamepad1.b) {
-                servoleft.setPosition(1);
-                servoright.setPosition(0);
+                ouTakeStone();
             }
 
-            if(gamepad1.right_trigger < .5) {
-                // Send calculated power to wheels
-                leftMotor.setPower(leftPower);
-                rightMotor.setPower(rightPower);
+            if (gamepad1.y) {
+                stopInTakeStone();
             }
-            else
-            {
-                leftMotor.setPower(leftTurboPower);
-                rightMotor.setPower(rightTurboPower);
+
+            if (gamepad1.x) {
+                if(servoleft.getPosition(0))
+                    servoleft.setPosition(0);
+                    servoright.setPosition(1);
+                }
+            if (gamepad1.right_trigger < .5) {
+                    // Send calculated power to wheels
+                    leftMotor.setPower(leftPower);
+                    rightMotor.setPower(rightPower);
+            } else {
+                    leftMotor.setPower(leftTurboPower);
+                    rightMotor.setPower(rightTurboPower);
 
             }
                 // Show the elapsed game time and wheel power.

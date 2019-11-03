@@ -50,7 +50,7 @@ import com.qualcomm.robotcore.util.Range;
  */
 
 @TeleOp(name="FWDPOV", group="Linear Opmode")
-//@Disabled
+@Disabled
 public class POV extends ICE_Controls_2Motors {
 
     // Declare OpMode members.

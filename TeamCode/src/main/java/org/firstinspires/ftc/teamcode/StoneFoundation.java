@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 
 //Define as Autonomous
-//@Disabled
+@Disabled
 @Autonomous(name = "Stone+Foundation", group = "Linear Opmode")
 public class StoneFoundation extends ICE_Controls_2Motors {
 

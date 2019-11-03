@@ -45,9 +45,9 @@ import java.util.List;
 //import all assets neccesary//
 
 //name of program that shows up on phone,group linear of iterative//
-@Autonomous(name="DetectAndDriveSkystone_Path3_Red", group="Linear Opmode")
+@Autonomous(name="RedAuto", group="Linear Opmode")
 //@Disabled
-public class DetectAndDriveSkystone_Path3_Red extends DetectAndDriveSkystone_Path3_V2 {
+public class DetectAndDriveSkystone_Path3_Red extends DetectAndDriveSkystone_Path3_V3 {
 
     public DetectAndDriveSkystone_Path3_Red()
     {

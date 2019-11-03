@@ -1,4 +1,4 @@
-/* Copyright (c) 2017 FIRST. All rights reserved.
+/* Copyright (c) 2019 FIRST. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted (subject to the limitations in the disclaimer below) provided that
@@ -26,31 +26,52 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-//import all assets neccesary//
+
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+import org.firstinspires.ftc.teamcode.ICE_Controls_2_Motors;
 
 import java.util.List;
 
-//name of program that shows up on phone,group linear of iterative//
-@TeleOp(name="DetectAndDriveToSkyStone", group="Linear Opmode")
-@Disabled
-public class DetectAndDriveToSkyStoneV1 extends LinearOpMode {
-
-    //Declare TensorFlow variables
+/**
+ *  * This 2019-2020 OpMode illustrates the basics of using the TensorFlow Object Detection API to
+ * determine the position of the Skystone game elements.
+ *
+ *  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
+ * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.
+ *
+ * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
+ * is explained below.
+ */
+@TeleOp(name = "Concept: TensorFlow Object Detection", group = "Concept")
+//@Disabled
+public class TensorFlow_Test extends ICE_Controls_2_Motors {
     private static final String TFOD_MODEL_ASSET = "Skystone.tflite";
     private static final String LABEL_FIRST_ELEMENT = "Stone";
     private static final String LABEL_SECOND_ELEMENT = "Skystone";
-//Entered Vuforia Key//
+
+    /*
+     * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
+     * 'parameters.vuforiaLicenseKey' is initialized is for illustration only, and will not function.
+     * A Vuforia 'Development' license key, can be obtained free of charge from the Vuforia developer
+     * web site at https://developer.vuforia.com/license-manager.
+     *
+     * Vuforia license keys are always 380 characters long, and look as if they contain mostly
+     * random data. As an example, here is a example of a fragment of a valid key:
+     *      ... yIgIzTqZ4mWjk9wd3cZO9T1axEqzuhxoGlfOOI2dRzKS4T0hQ8kT ...
+     * Once you've obtained a license key, copy the string from the Vuforia web site
+     * and paste it in to your code on the next line, between the double quotes.
+     */
     private static final String VUFORIA_KEY =
             " AZWzerv/////AAABmZeKo4MkD08MoSz5oHB/JU6N1BsUWpfHgQeAeVZemAypSUGVQhvAHo6+v7kJ3MITd8530MhwxRx7GjRtdCs1qjPmdKiJK66dv0yN4Zh4NvKBfP5p4TJjM+G0GoMVgVK0pItm2U56/SVqQH2AYtczQ+giw6zBe4eNhHPJCMY5C2t5Cs6IxxjZlMkRF85l8YAUlKGLipnoZ1T/mX8DNuThQA57qsIB2EN6pGWe8GI64hcPItQ0j7Oyjp82lEN13rYQYsS3Ur4a6//D6yhwa0rogXAysG68G+VgC1mNlj1CjX60qDI84ZN0b/A081xXqjeyFqZK8A/jO8y7BGz9ZuuZNxxXIon6xRNeKYudpfTD23+5";
 
@@ -59,39 +80,26 @@ public class DetectAndDriveToSkyStoneV1 extends LinearOpMode {
      * localization engine.
      */
     private VuforiaLocalizer vuforia;
-//Not sure what this line means //
+
     /**
      * {@link #tfod} is the variable we will use to store our instance of the TensorFlow Object
      * Detection engine.
      */
     private TFObjectDetector tfod;
-//Pretty sure this mean that it is turning on the object detector//
-
-    // Declare OpMode members.
-    private ElapsedTime runtime = new ElapsedTime();
-   // private DcMotor leftDrive = null;
-    //private DcMotor rightDrive = null;
-//Naming motors//
-    DcMotor leftMotor;
-    DcMotor rightMotor;
-//Setting power variable//
-    double power = 0.2;
-//new instance//
 
     @Override
-//what shows up on your phone//
     public void runOpMode() {
-        telemetry.addData("On Our Way To the Stone", "SkyStone");
-        telemetry.update();
         // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
         // first.
+        initializeHardware();
         initVuforia();
-        //If phone is comapatible start: if not say text on phone//
+
         if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
             initTfod();
         } else {
             telemetry.addData("Sorry!", "This device is not compatible with TFOD");
         }
+
         /**
          * Activate TensorFlow Object Detection before we wait for the start command.
          * Do it here so that the Camera Stream window will have the TensorFlow annotations visible.
@@ -99,93 +107,42 @@ public class DetectAndDriveToSkyStoneV1 extends LinearOpMode {
         if (tfod != null) {
             tfod.activate();
         }
-//mapping and finding the motors//
-        leftMotor  = hardwareMap.get(DcMotor.class, "leftMotor");
-        rightMotor = hardwareMap.get(DcMotor.class, "rightMotor");
-
-//setting direction of motors//
-        leftMotor.setDirection(DcMotor.Direction.FORWARD);
-        rightMotor.setDirection(DcMotor.Direction.FORWARD);
-
 
         /** Wait for the game to begin */
-       //What shows up on your phone//
         telemetry.addData(">", "Press Play to start op mode");
         telemetry.update();
-//Wait for start
         waitForStart();
-        runtime.reset();
-//If opmode is active,turn until you find stone or skystone//
+
         if (opModeIsActive()) {
             while (opModeIsActive()) {
-                power = 0.2;
-                leftMotor.setPower(power);
-                rightMotor.setPower(power);
-                sleep(250);
-                power=0.0;
-                leftMotor.setPower(power);
-                rightMotor.setPower(power);
-                sleep(1000);
-//keep attempting to find stone//
                 if (tfod != null) {
                     // getUpdatedRecognitions() will return null if no new information is available since
                     // the last time that call was made.
                     List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-//If you find stone then say on DS Object detected//
                     if (updatedRecognitions != null) {
-                        telemetry.addData("# Object Detected", updatedRecognitions.size());
+                      telemetry.addData("# Object Detected", updatedRecognitions.size());
 
-                        // step through the list of recognitions and display boundary info.
-                        int i = 0;
-                        for (Recognition recognition : updatedRecognitions) {
-                            telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
-                            telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
-                                    recognition.getLeft(), recognition.getTop());
-                            telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
-                                    recognition.getRight(), recognition.getBottom());
-                        }
-                        telemetry.update();
-                        //Found Object.....Now break the while loop
-                        if (updatedRecognitions.size()>0) {
-                            boolean skystoneFound = false;
-                            for (Recognition recognition : updatedRecognitions) {
-                               if( recognition.getLabel()== LABEL_SECOND_ELEMENT)
-                               {
-                               skystoneFound=true;
-                                break;
-                               }
+                      // step through the list of recognitions and display boundary info.
+                      int i = 0;
+                      for (Recognition recognition : updatedRecognitions) {
+                        telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
+                        telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
+                                          recognition.getLeft(), recognition.getTop());
+                        telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
+                                recognition.getRight(), recognition.getBottom());
+                          telemetry.addData("angle:",recognition.estimateAngleToObject(AngleUnit.DEGREES));
+                          telemetry.addData("angle:",imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle);
 
-
-
-                            }
-                            if (skystoneFound == true)
-                                break;
-                        }
+                      }
+                      telemetry.update();
                     }
                 }
-
-
             }
-//object detected... Now move to the object//
-//Go forward for 1 second and then stop for ten and shut off//
-
-
         }
 
-        leftMotor.setDirection(DcMotor.Direction.REVERSE);
-        rightMotor.setDirection(DcMotor.Direction.FORWARD);
-
-
-        power = 0.5;
-        leftMotor.setPower(power);
-        rightMotor.setPower(power);
-        sleep(1000);
-         power=0.0;
-         leftMotor.setPower(power);
-         rightMotor.setPower(power);
-         sleep(10000);
-
-
+        if (tfod != null) {
+            tfod.shutdown();
+        }
     }
 
     /**
@@ -211,12 +168,10 @@ public class DetectAndDriveToSkyStoneV1 extends LinearOpMode {
      */
     private void initTfod() {
         int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
-                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+            "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
         tfodParameters.minimumConfidence = 0.8;
-        //what shows on screen//
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
     }
-
 }

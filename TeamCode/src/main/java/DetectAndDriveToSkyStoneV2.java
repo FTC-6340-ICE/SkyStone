@@ -27,6 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 //import all assets neccesary//
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -43,7 +44,7 @@ import org.firstinspires.ftc.teamcode.ICE_Controls;
 import java.util.List;
 //name of program that shows up on phone,group linear of iterative//
 @Autonomous(name="DetectAndDriveToSkyStoneWithGyro", group="Linear Opmode")
-//@Disabled
+@Disabled
 public class DetectAndDriveToSkyStoneV2 extends ICE_Controls {
 
     private ElapsedTime runtime = new ElapsedTime();

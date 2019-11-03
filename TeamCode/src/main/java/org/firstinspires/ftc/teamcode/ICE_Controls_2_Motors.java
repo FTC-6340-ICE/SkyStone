@@ -5,6 +5,7 @@ import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
@@ -19,7 +20,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
-
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import static java.lang.Math.abs;
 
 /**
@@ -59,11 +60,14 @@ public abstract class ICE_Controls_2_Motors extends LinearOpMode {
 
     protected DcMotorEx leftMotor;
     protected DcMotorEx rightMotor;
+    protected DcMotorEx intakeMotorRight;
+    protected DcMotorEx intakeMotorLeft;
 
     //Instantiate servos
     //protected Servo ????;
     protected Servo   servoleft;
     protected Servo servoright;
+    protected Servo servoCapStone;
 
 
     //Instantiate sensors
@@ -80,19 +84,20 @@ public abstract class ICE_Controls_2_Motors extends LinearOpMode {
     //static final double     COUNTS_PER_MOTOR_REV_CORE_HEX    = 1120 ;    // eg: Rev Core Hex Motor Encoder
     static final double     COUNTS_PER_MOTOR_REV_CORE_HEX    = 560 ;    // eg: Rev Core Hex Motor Encoder
     static final double     DRIVE_GEAR_REDUCTION_CORE_HEX    = 1 ;     // This is < 1.0 if geared UP
-    static final double     WHEEL_DIAMETER_INCHES_CORE_HEX   = 3.6 ;     // For figuring circumference 3.54
+    static final double     WHEEL_DIAMETER_INCHES_CORE_HEX   = 3.36 ;     // For figuring circumference 3.54
     static final double     COUNTS_PER_INCH_CORE_HEX         = (COUNTS_PER_MOTOR_REV_CORE_HEX * DRIVE_GEAR_REDUCTION_CORE_HEX) /
-            (WHEEL_DIAMETER_INCHES_CORE_HEX * 3.1415);
+            (WHEEL_DIAMETER_INCHES_CORE_HEX * 3.1416);
 
     // These constants define the desired driving/control characteristics
     // The can/should be tweaked to suite the specific robot drive train.
-    public final double DRIVE_SPEED = .6;     // Nominal speed for better accuracy.
+    public final double DRIVE_SPEED = .5;     // Nominal speed for better accuracy.
     public final double TURN_SPEED = .3;     // Nominal half speed for better accuracy.
+    public final double HOLD_SPEED = .3;     // Nominal half speed for better accuracy.
 
-    static final double HEADING_THRESHOLD = 2.5;      // As tight as we can make it with an integer gyro
-    static final double P_TURN_COEFF = .02;     // .02 Larger is more responsive, but also less stable
-    static final double P_DRIVE_COEFF = .02;     // .05 Larger is more responsive, but also less stable
-
+    static final double HEADING_THRESHOLD = 1.5;      // As tight as we can make it with an integer gyro
+    static final double P_TURN_COEFF = .009;     // .02 Larger is more responsive, but also less stable
+    static final double P_DRIVE_COEFF = .009;     // .009 Larger is more responsive, but also less stable
+    static final double P_HOLD_COEFF = .009;
     static final double MIN_TURN_SPEED = .15;
     //
 
@@ -112,13 +117,18 @@ public abstract class ICE_Controls_2_Motors extends LinearOpMode {
         //Give the OK message
         telemetry.addData("Status", "Initializing hardware");
         telemetry.update();
-
+        DigitalChannel digitalTouch;  // Hardware Device Object
         //Initialize robot hardware
         //Begin with the chassis
         leftMotor = (DcMotorEx) hardwareMap.get(DcMotor.class, "leftMotor0");
         rightMotor = (DcMotorEx) hardwareMap.get(DcMotor.class, "rightMotor1");
+        intakeMotorRight = (DcMotorEx) hardwareMap.get(DcMotor.class, "intakeMotorRight");
+        intakeMotorLeft = (DcMotorEx) hardwareMap.get(DcMotor.class, "intakeMotorLeft");
+        digitalTouch = hardwareMap.get(DigitalChannel.class, "stopMotorIntake01");
+
 
         //Reset the encoders on the chassis to 0
+
         leftMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         rightMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
 
@@ -137,7 +147,11 @@ public abstract class ICE_Controls_2_Motors extends LinearOpMode {
         // ??? = hardwareMap.get(Servo.class, "???");
         servoright = hardwareMap.get(Servo.class, "rightServo4");
         servoleft = hardwareMap.get(Servo.class, "leftServo5");
-
+        servoCapStone =hardwareMap.get(Servo.class, "CapStoneServo3");
+        intakeMotorLeft.setDirection(DcMotor.Direction.REVERSE);
+        intakeMotorRight.setDirection(DcMotor.Direction.FORWARD);
+        digitalTouch.setMode(DigitalChannel.Mode.INPUT);
+        //stopIntake = hardwareMap.get(DigitalChannel.class, "stopMotorIntake01");
 
         //Initialize sensors
         //??? = hardwareMap.get(ColorSensor.class, "???"); //for colorsensor
@@ -339,6 +353,7 @@ public abstract class ICE_Controls_2_Motors extends LinearOpMode {
 
 
 
+
     public void gyroDrive ( double speed, double distance, double heading, double timeout){
             int newLeftTarget;
             int newRightTarget;
@@ -412,7 +427,7 @@ public abstract class ICE_Controls_2_Motors extends LinearOpMode {
 
         }
 
-        public void gyroTurn ( double speed, double heading, double timeout){
+    public void gyroTurn ( double speed, double heading, double timeout){
 
 //Ensure the motors are in the right configuration
             rightMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
@@ -428,7 +443,8 @@ public abstract class ICE_Controls_2_Motors extends LinearOpMode {
 
 
         }
-        public void gyroHold ( double speed, double heading, double holdTime){
+
+    public void gyroHold ( double speed, double heading, double holdTime){
 
             ElapsedTime holdTimer = new ElapsedTime();
 
@@ -436,7 +452,7 @@ public abstract class ICE_Controls_2_Motors extends LinearOpMode {
             holdTimer.reset();
             while (opModeIsActive() && (holdTimer.time() < holdTime)) {
                 // Update telemetry & Allow time for other processes to run.
-                onHeading(speed, heading, P_TURN_COEFF);
+                onHeading(speed, heading, P_HOLD_COEFF);
                 telemetry.update();
             }
 
@@ -523,6 +539,24 @@ public abstract class ICE_Controls_2_Motors extends LinearOpMode {
 
         return onTarget;
     }
+
+    public void inTakeStone(){
+        intakeMotorLeft.setPower(-1.0);
+        intakeMotorRight.setPower(1.0);
+
+    }
+
+    public void ouTakeStone(){
+        intakeMotorLeft.setPower(1.0);
+        intakeMotorRight.setPower(-1.0);
+
+    }
+    public void stopInTakeStone(){
+        intakeMotorLeft.setPower(0.0);
+        intakeMotorRight.setPower(0.0);
+
+    }
+
 
 
 

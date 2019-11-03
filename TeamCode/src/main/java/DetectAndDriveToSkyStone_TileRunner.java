@@ -27,6 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 //import all assets neccesary//
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -42,7 +43,7 @@ import java.util.List;
 
  //name of program that shows up on phone,group linear of iterative//
  @TeleOp(name="DetectAndDriveToSkyStone", group="Linear Opmode")
- //@Disabled
+ @Disabled
  public class DetectAndDriveToSkyStone_TileRunner extends LinearOpMode {
 
      //Declare TensorFlow variables

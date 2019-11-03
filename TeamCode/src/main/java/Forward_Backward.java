@@ -37,7 +37,7 @@ import com.qualcomm.robotcore.util.Range;
 
 
 @Autonomous(name="Basic: Linear OpMode", group="Linear Opmode")
-//@Disabled
+@Disabled
 public class Forward_Backward extends LinearOpMode {
 
     // Declare OpMode members.

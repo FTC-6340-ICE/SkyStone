@@ -62,12 +62,14 @@ public abstract class ICE_Controls_2_Motors extends LinearOpMode {
     protected DcMotorEx rightMotor;
     protected DcMotorEx intakeMotorRight;
     protected DcMotorEx intakeMotorLeft;
-
+    protected DigitalChannel digitalTouch;
+    protected DigitalChannel touchSensorBack;
     //Instantiate servos
     //protected Servo ????;
     protected Servo   servoleft;
     protected Servo servoright;
     protected Servo servoCapStone;
+//    protected Servo servoUp;
 
 
     //Instantiate sensors
@@ -91,9 +93,9 @@ public abstract class ICE_Controls_2_Motors extends LinearOpMode {
     // These constants define the desired driving/control characteristics
     // The can/should be tweaked to suite the specific robot drive train.
     public final double DRIVE_SPEED = .5;     // Nominal speed for better accuracy.
-    public final double TURN_SPEED = .3;     // Nominal half speed for better accuracy.
+    public final double TURN_SPEED = .5;     // Nominal half speed for better accuracy.
     public final double HOLD_SPEED = .3;     // Nominal half speed for better accuracy.
-
+    public final double DRIVE_SPEED_BOOST = .8;
     static final double HEADING_THRESHOLD = 1.5;      // As tight as we can make it with an integer gyro
     static final double P_TURN_COEFF = .009;     // .02 Larger is more responsive, but also less stable
     static final double P_DRIVE_COEFF = .009;     // .009 Larger is more responsive, but also less stable
@@ -117,14 +119,15 @@ public abstract class ICE_Controls_2_Motors extends LinearOpMode {
         //Give the OK message
         telemetry.addData("Status", "Initializing hardware");
         telemetry.update();
-        DigitalChannel digitalTouch;  // Hardware Device Object
-        //Initialize robot hardware
+               //Initialize robot hardware
         //Begin with the chassis
         leftMotor = (DcMotorEx) hardwareMap.get(DcMotor.class, "leftMotor0");
         rightMotor = (DcMotorEx) hardwareMap.get(DcMotor.class, "rightMotor1");
         intakeMotorRight = (DcMotorEx) hardwareMap.get(DcMotor.class, "intakeMotorRight");
         intakeMotorLeft = (DcMotorEx) hardwareMap.get(DcMotor.class, "intakeMotorLeft");
-        digitalTouch = hardwareMap.get(DigitalChannel.class, "stopMotorIntake01");
+        digitalTouch = hardwareMap.get(DigitalChannel.class, "sensor_digital");
+        touchSensorBack = hardwareMap.get(DigitalChannel.class, "touchSensor23");
+
 
 
         //Reset the encoders on the chassis to 0
@@ -145,12 +148,16 @@ public abstract class ICE_Controls_2_Motors extends LinearOpMode {
 
         //Initialize the servos
         // ??? = hardwareMap.get(Servo.class, "???");
-        servoright = hardwareMap.get(Servo.class, "rightServo4");
-        servoleft = hardwareMap.get(Servo.class, "leftServo5");
-        servoCapStone =hardwareMap.get(Servo.class, "CapStoneServo3");
+        servoright = hardwareMap.get(Servo.class, "rightFoundation");
+        servoleft = hardwareMap.get(Servo.class, "leftFoundation");
+       // servoUp = hardwareMap.get(Servo.class,"servoUp");
+        servoCapStone = hardwareMap.get(Servo.class,"servoCapstone3");
+      //  servoCapStone =hardwareMap.get(Servo.class, "CapStoneServo3");
         intakeMotorLeft.setDirection(DcMotor.Direction.REVERSE);
         intakeMotorRight.setDirection(DcMotor.Direction.FORWARD);
         digitalTouch.setMode(DigitalChannel.Mode.INPUT);
+        touchSensorBack.setMode(DigitalChannel.Mode.INPUT);
+
         //stopIntake = hardwareMap.get(DigitalChannel.class, "stopMotorIntake01");
 
         //Initialize sensors
@@ -354,7 +361,7 @@ public abstract class ICE_Controls_2_Motors extends LinearOpMode {
 
 
 
-    public void gyroDrive ( double speed, double distance, double heading, double timeout){
+    public void gyroDrive ( double speed, double distance, double heading, double timeout ){
             int newLeftTarget;
             int newRightTarget;
             int moveCounts;
@@ -426,6 +433,85 @@ public abstract class ICE_Controls_2_Motors extends LinearOpMode {
             }
 
         }
+
+    public void gyroDriveStopOnTouchSensor ( double speed, double distance, double heading, double timeout){
+        int newLeftTarget;
+        int newRightTarget;
+        int moveCounts;
+        double max;
+        double error;
+        double steer;
+        double leftSpeed;
+        double rightSpeed;
+
+        // Ensure that the opmode is still active
+        if (opModeIsActive()) {
+
+            // Determine new target position, and pass to motor controller
+            moveCounts = (int) (distance * COUNTS_PER_INCH_CORE_HEX);
+            newLeftTarget = leftMotor.getCurrentPosition() + moveCounts;
+            newRightTarget = rightMotor.getCurrentPosition() + moveCounts;
+
+            // Set Target and Turn On RUN_TO_POSITION
+            leftMotor.setTargetPosition(newLeftTarget);
+            rightMotor.setTargetPosition(newRightTarget);
+
+            // Turn On RUN_TO_POSITION
+            leftMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+            rightMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+            leftMotor.setTargetPositionTolerance(100);
+            rightMotor.setTargetPositionTolerance(100);
+            // start motion.
+            speed = Range.clip(speed, -1.0, 1.0);
+            leftDrive(speed);
+            rightDrive(speed);
+
+            double timeoutTime = runtime.seconds() + timeout;
+            // keep looping while we are still active, and BOTH motors are running.
+            while (opModeIsActive()
+                    && (leftMotor.isBusy()
+                    && rightMotor.isBusy())
+                    && runtime.seconds() <= timeoutTime
+                    && touchSensorBack.getState() == true
+            )
+            {
+
+                // adjust relative speed based on heading error.
+                error = getError(heading);
+                steer = getSteer(error, P_DRIVE_COEFF);
+
+                // if driving in reverse, the motor correction also needs to be reversed
+                if (distance < 0) steer *= -1.0;
+
+                leftSpeed = speed - steer;
+                rightSpeed = speed + steer;
+                telemetry.addData("left: ", leftSpeed);
+                telemetry.addData("right", rightSpeed);
+                telemetry.update();
+                // Normalize speeds if either one exceeds +/- 1.0;
+                max = Math.max(abs(leftSpeed), abs(rightSpeed));
+                if (max > 1.0) {
+                    leftSpeed /= max;
+                    rightSpeed /= max;
+                }
+
+                leftDrive(leftSpeed);
+                rightDrive(rightSpeed);
+
+                // Display drive status for the driver.
+                telemetry.addData("Err/St", "%5.1f/%5.1f", error, steer);
+                telemetry.addData("Target", "%7d:%7d", newLeftTarget, newRightTarget);
+                telemetry.addData("Actual", "%7d:%7d", leftMotor.getCurrentPosition(), rightMotor.getCurrentPosition());
+                telemetry.addData("Speed", "%5.2f:%5.2f", leftSpeed, rightSpeed);
+                telemetry.update();
+            }
+
+            // Stop all motion;
+            leftDrive(0);
+            rightDrive(0);
+        }
+
+    }
 
     public void gyroTurn ( double speed, double heading, double timeout){
 
@@ -542,13 +628,33 @@ public abstract class ICE_Controls_2_Motors extends LinearOpMode {
 
     public void inTakeStone(){
         intakeMotorLeft.setPower(-1.0);
-        intakeMotorRight.setPower(1.0);
+        intakeMotorRight.setPower(-1.0);
+
+    }
+    public void inTakeStone(boolean turnOnlyOneAtIntake,int teamColor){
+        if(turnOnlyOneAtIntake)
+        {
+            if(teamColor==1)
+            {
+                intakeMotorRight.setPower(-1.0);
+
+            }
+            else
+            {
+                intakeMotorLeft.setPower(-1.0);
+
+            }
+        }
+        else {
+            intakeMotorLeft.setPower(-1.0);
+            intakeMotorRight.setPower(-1.0);
+        }
 
     }
 
     public void ouTakeStone(){
         intakeMotorLeft.setPower(1.0);
-        intakeMotorRight.setPower(-1.0);
+        intakeMotorRight.setPower(1.0);
 
     }
     public void stopInTakeStone(){
@@ -557,6 +663,12 @@ public abstract class ICE_Controls_2_Motors extends LinearOpMode {
 
     }
 
+    public void ouTakeStoneForAutonomous(double heading,double timeout,double distance){
+        gyroDrive(DRIVE_SPEED,distance,heading,timeout);
+        intakeMotorLeft.setPower(1.0);
+        intakeMotorRight.setPower(1.0);
+
+    }
 
 
 

@@ -32,11 +32,11 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 //import all assets neccesary//
 
 //name of program that shows up on phone,group linear of iterative//
-@Autonomous(name="BlueAuto", group="Linear Opmode")
+@Autonomous(name="GetFoundationBlue", group="Linear Opmode")
 //@Disabled
-public class    DetectAndDriveSkystone_Path3_Blue extends DetectAndDriveSkystone_Path3_V3 {
+public class GetFoundationBlue extends GetFoundation {
 
-    public DetectAndDriveSkystone_Path3_Blue()
+    public GetFoundationBlue()
     {
        super(-1);
     }

@@ -74,33 +74,45 @@ public class FWDPOV extends ICE_Controls_2_Motors {
             rightTurboPower = Range.clip(drive - turn, -1 * turboMaxSpeed, turboMaxSpeed);
 
             //  if (gamepad1.a) {
-            servoleft.setPosition(0.25);
+           // servoleft.setPosition(0.25);
 
             //}
             //if (gamepad1.b) {
-            servoleft.setPosition(1);
+            //servoleft.setPosition(1);
 
 
             //
 
-
-            if (gamepad1.a) {
-                inTakeStone();
-
-            }
-            if (gamepad1.b) {
-                ouTakeStone();
-            }
-
-            if (gamepad1.y) {
+            if (digitalTouch.getState() == true) {
+                telemetry.addData("Digital Touch", "Is Not Pressed");
+            } else {
                 stopInTakeStone();
             }
 
-            if (gamepad1.x) {
-                if(servoleft.getPosition(0))
-                    servoleft.setPosition(0);
-                    servoright.setPosition(1);
-                }
+            if (gamepad2.a) {
+                inTakeStone();
+
+            }
+            if (gamepad2.y) {
+                ouTakeStone();
+            }
+
+            if (gamepad2.x) {
+                stopInTakeStone();
+            }
+
+            if (gamepad2.right_bumper){
+                servoleft.setPosition(1);
+                servoright.setPosition(0);
+
+            }
+
+            if (gamepad2.left_bumper){
+                servoleft.setPosition(0);
+                servoright.setPosition(1);
+
+            }
+
             if (gamepad1.right_trigger < .5) {
                     // Send calculated power to wheels
                     leftMotor.setPower(leftPower);
@@ -110,7 +122,12 @@ public class FWDPOV extends ICE_Controls_2_Motors {
                     rightMotor.setPower(rightTurboPower);
 
             }
-                // Show the elapsed game time and wheel power.
+            if (gamepad2.b) {
+                servoCapStone.setPosition(0.0);
+
+            }
+
+            // Show the elapsed game time and wheel power.
                 telemetry.addData("Status", "Run Time: " + runtime.toString());
                 telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
                 telemetry.update();

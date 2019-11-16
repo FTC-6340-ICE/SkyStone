@@ -1,4 +1,5 @@
 
+
 /* Copyright (c) 2017 FIRST. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -45,7 +46,7 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.
  */
 @TeleOp(name = "Sensor: Digital touch", group = "Sensor")
-@Disabled
+//@Disabled
 public class SensorDigitalTouch extends LinearOpMode {
     /**
      * The REV Robotics Touch Sensor

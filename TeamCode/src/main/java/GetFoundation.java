@@ -1,20 +1,3 @@
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
-import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
-import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
-import org.firstinspires.ftc.teamcode.ICE_Controls_2_Motors;
-
-import java.util.List;
-import java.util.regex.Matcher;
-
-;
 /* Copyright (c) 2017 FIRST. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -43,22 +26,34 @@ import java.util.regex.Matcher;
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-//import all assets neccesary//
 
-//name of program that shows up on phone,group linear of iterative//
-@Autonomous(name="DetectAndDriveSkystone_Path3_V3", group="Linear Opmode")
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+import org.firstinspires.ftc.teamcode.ICE_Controls_2_Motors;
+
+import java.util.List;
+
+
+@Autonomous(name="GetFoundation", group="Linear Opmode")
 //@Disabled
-public abstract class DetectAndDriveSkystone_Path3_V3 extends ICE_Controls_2_Motors {
-
-    public DetectAndDriveSkystone_Path3_V3(int TeamColor)
-    {
-       super();
-       teamColor = TeamColor;
-    }
-    private ElapsedTime runtime = new ElapsedTime();
-    //if(public int ElapsedTime)
-    //teamColor  = 1 for Red an -1 or Blue team
+    public abstract class GetFoundation extends ICE_Controls_2_Motors {
+        // Declare OpMode members.
+        public GetFoundation(int TeamColor)
+        {
+            super();
+            teamColor = TeamColor;
+        }
     private int teamColor;
+    private ElapsedTime runtime = new ElapsedTime();
+
     private final double SKYSTONE_DETECT_MAX_TIME_SECONDS = 5.0;
     private double CameraOffSetDistaceFromMiddle =1;
     private double CameraDistanceAwayFromBack =10;
@@ -67,179 +62,87 @@ public abstract class DetectAndDriveSkystone_Path3_V3 extends ICE_Controls_2_Mot
     private double DistanceToGoForwardForStoneIntake = 36;
     private double DistanceToComeBackAfterStoneIntake = 34;
     private double DistanceToGoBackBeforeDetectingSecondSkyStone = 2;
-    @Override
-//what shows up on your phone//
-    public void runOpMode() {
+
+    // private DcMotor leftDrive = null;
+        //private DcMotor rightDrive = null;
+        //DcMotor leftMotor;
+        //DcMotor rightMotor;
+        @Override
+        public void runOpMode() {
         initializeHardware();
+            telemetry.addData("Status", "Initialized");
+            telemetry.update();
 
-        //servoleft.setPosition(0.5);
-        telemetry.addData("On Our Way To the Stone", "SkyStone");
-        telemetry.update();
-        double adjacentSide = CameraDistanceToStones - DistanceToMoveForwardFromBackWall;
-        double oppositeSide = 8;//Width of a Stone
-        double angleOffsetToSideStoneThreshold = Math.toDegrees(Math.atan(oppositeSide/adjacentSide))/2;
+            double adjacentSide = CameraDistanceToStones - DistanceToMoveForwardFromBackWall;
+            double oppositeSide = 8;//Width of a Stone
+            double angleOffsetToSideStoneThreshold = Math.toDegrees(Math.atan(oppositeSide/adjacentSide))/2;
 
-        double angleToAdjustDueToPhoneOffset = Math.toDegrees(Math.atan(CameraOffSetDistaceFromMiddle/adjacentSide));
-        // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
-        // first.
-        initVuforia();
-        //If phone is comapatible start: if not say text on phone//
-        if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
-            initTfod();
-        } else {
-            telemetry.addData("Sorry!", "This device is not compatible with TFOD");
-        }
-        /**
-         * Activate TensorFlow Object Detection before we wait for the start command.
-         * Do it here so that the Camera Stream window will have the TensorFlow annotations visible.
-         **/
-        if (tfod != null) {
-            tfod.activate();
-        }
-
-        /** Wait for the game to begin */
-        //What shows up on your phone//
-        telemetry.addData(">", "Press Play to start op mode");
-        telemetry.update();
-//Wait for start
-
-        waitForStart();
-        runtime.reset();
-        double currentAngle = 0;
-
-        //If opmode is active,turn until you find stone or skystone//
-        if (opModeIsActive()) {
-            //double TURN_SPEED=1.0;
-            //double DRIVE_SPEED=0.7;
-
-//            gyroHold(HOLD_SPEED,0,2);
-            gyroHold(HOLD_SPEED,0,1);
-            gyroDrive(DRIVE_SPEED,DistanceToMoveForwardFromBackWall,0,2);
-            gyroHold(HOLD_SPEED,0,2);
-
-           // CameraDevice.getInstance().setFlashTorchMode(true);
-            ElapsedTime timeToLookForSkyStone = new ElapsedTime();
-            timeToLookForSkyStone.reset();
-
-//Fird and Move First Skystone
-            while (opModeIsActive()) {
-                RecognizedObject recognizedObject = DetectSkyStoneAndReturnAngle();
-                if ((recognizedObject.skystoneFound)||(timeToLookForSkyStone.seconds()> SKYSTONE_DETECT_MAX_TIME_SECONDS)) {
-//shows us angle to turn to//
-                    double angleToTurnToBasedOnVariables;
-
-
-                    double angleToTurnTo;
-                    if(recognizedObject.skystoneFound) {
-                        angleToTurnTo = -1 * (recognizedObject.skystoneFoundAngle-angleToAdjustDueToPhoneOffset);
-
-                    }
-                    else
-                    {
-                        angleToTurnTo = 0;
-                    }
-                    telemetry.addData(">", "Skystone FOUND!!!!!");
-                    telemetry.addData("AngleToTurnTo =", angleToTurnTo);
-                    telemetry.update();
-                   //sleep(3000);
-                    double angleToAddToAngle = -1 * imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
-                    angleToTurnTo -= angleToAddToAngle;
-
-                    double distanceToDropOffSkystone = 0;
-                    double distanceBackToCenterLine = 0;
-                    double distanceBackToSecondStone = 0;
-                   //right side
-                    if(angleToTurnTo<-1*angleOffsetToSideStoneThreshold){
-                        if(teamColor==1) {
-                            //red side
-                            distanceToDropOffSkystone = 40;
-                            distanceBackToCenterLine = -10;
-                            distanceBackToSecondStone = -70;
-                        }
-                        else {
-                            //blue side
-                            distanceToDropOffSkystone = 40;
-                            distanceBackToCenterLine = -10;
-                            distanceBackToSecondStone = -70;
-                        }
-                        //angleToTurnTo -= 4;
-                    }
-        //Left Side
-                    else if(angleToTurnTo>angleOffsetToSideStoneThreshold){
-                        if(teamColor==1) {
-                            //red side
-                            distanceToDropOffSkystone = 41;
-                            distanceBackToCenterLine = -15;
-                            distanceBackToSecondStone = -71;
-                        }
-                        else
-                        {
-                            //blue sides
-                            distanceToDropOffSkystone = 41;
-                            distanceBackToCenterLine = -15;
-                            distanceBackToSecondStone = -71;
-                        }
-                       // angleToTurnTo += 4;
-
-                    }
-//Middle
-                    else{
-                        distanceToDropOffSkystone=40;
-                        distanceBackToCenterLine=-10;
-                        distanceBackToSecondStone=-70;
-                    }
-
-                    telemetry.addData(">", "Skystone FOUND!!!!!");
-                    telemetry.addData("NEW AngleToTurnTo =", angleToTurnTo);
-                    telemetry.update();
-                    //sleep(3000);
-
-                    gyroTurn(TURN_SPEED,angleToTurnTo,5);
-                    gyroHold(HOLD_SPEED,angleToTurnTo,0.5);
-                   //servoleft.setPosition(0.3);
-                   //sleep(1000);
-                    inTakeStone();
-                    gyroDrive(DRIVE_SPEED, DistanceToGoForwardForStoneIntake, angleToTurnTo,2);
-                   // servoleft.setPosition(0.5);
-                    //sleep(1000);
-                    //gyroDrive(DRIVE_SPEED, 8, angleToTurnTo,5);
-
-                    //servoleft.setPosition(0.25);
-                    //servoright.setPosition(1.0);
-                    //sleep(1350);
-                    /*
-                    if(servoleft.getPosition() >0.25)
-                    {
-                        servoleft.setPosition(servoleft.getPosition() +0.02);
-                        sleep(1000);
-                    }
-
-                    */
-                    stopInTakeStone();
-                    gyroDrive(DRIVE_SPEED_BOOST, -1*DistanceToComeBackAfterStoneIntake, angleToTurnTo,5);
-                    //turning right
-                   // stopInTakeStone();
-                    gyroTurn(TURN_SPEED,-90*teamColor,5);
-                    gyroHold(HOLD_SPEED,-90*teamColor,0.5);
-                    gyroDrive(DRIVE_SPEED_BOOST,distanceToDropOffSkystone, -90*teamColor,5);
-                    ouTakeStoneForAutonomous(-90*teamColor,2,-5);
-                    //Put's servo up to deliver stone
-                    //servoleft.setPosition(1.0);
-                    //servoright.setPosition(0.0);
-                    //sleep(1000);
-                    sleep(500);
-                    stopInTakeStone();
-                    gyroHold(HOLD_SPEED,-80,0.5);
-                    gyroDrive(DRIVE_SPEED_BOOST,distanceBackToSecondStone,-80*teamColor);
-                    gyroTurn(TURN_SPEED,0,3);
-                    gyroHold(HOLD_SPEED,0,0.5);
-                    gyroDrive(DRIVE_SPEED,-1*DistanceToGoBackBeforeDetectingSecondSkyStone,0,2);
-                    //gyroDrive(DRIVE_SPEED,5,0);
-                    break;
-
-               }
+            double angleToAdjustDueToPhoneOffset = Math.toDegrees(Math.atan(CameraOffSetDistaceFromMiddle/adjacentSide));
+            // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
+            // first.
+            initVuforia();
+            //If phone is comapatible start: if not say text on phone//
+            if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
+                initTfod();
+            } else {
+                telemetry.addData("Sorry!", "This device is not compatible with TFOD");
+            }
+            /**
+             * Activate TensorFlow Object Detection before we wait for the start command.
+             * Do it here so that the Camera Stream window will have the TensorFlow annotations visible.
+             **/
+            if (tfod != null) {
+                tfod.activate();
             }
 
+
+            waitForStart();
+
+            runtime.reset();
+            if (digitalTouch.getState() == true) {
+                telemetry.addData("Digital Touch", "Is Not Pressed");
+            } else {
+
+            }
+
+            servoleft.setPosition(1);
+            servoright.setPosition(0);
+            gyroHold(DRIVE_SPEED,0,1);
+            gyroDrive(DRIVE_SPEED,25*-1,0,2);
+
+            gyroDriveStopOnTouchSensor(.3,15*-1,0,2);
+
+            //gyroHold(DRIVE_SPEED,0,1);
+            gyroHold(DRIVE_SPEED,0,1);
+            servoleft.setPosition(0);
+            servoright.setPosition(1);
+            gyroHold(DRIVE_SPEED,0,1);
+
+            gyroDrive(DRIVE_SPEED_BOOST,40,0,2);
+
+            servoleft.setPosition(1);
+            servoright.setPosition(0);
+            gyroHold(DRIVE_SPEED,0,1);
+
+
+            intakeMotorLeft.setPower(1.0);
+            intakeMotorRight.setPower(0.0);
+            gyroTurn(0.3,-90*teamColor,5);
+            gyroDrive(DRIVE_SPEED,30,-90*teamColor,2);
+            intakeMotorLeft.setPower(0.0);
+
+            gyroTurn(TURN_SPEED,-180*teamColor,5);
+            gyroDrive(DRIVE_SPEED,12,-180*teamColor,2);
+            gyroTurn(TURN_SPEED,-270*teamColor,5);
+            gyroDrive(DRIVE_SPEED,18,-270*teamColor,2);
+
+            //Skystone detect code start
+            gyroDrive(DRIVE_SPEED_BOOST,-72,-260*teamColor);
+            gyroTurn(TURN_SPEED,-180,3);
+            gyroHold(HOLD_SPEED,-180,0.5);
+            gyroDrive(DRIVE_SPEED,-1*DistanceToGoBackBeforeDetectingSecondSkyStone,-180,2);
+
+            ElapsedTime timeToLookForSkyStone = new ElapsedTime();
             timeToLookForSkyStone.reset();
 //Find and Move Second Skystone
             while (opModeIsActive()) {
@@ -259,7 +162,7 @@ public abstract class DetectAndDriveSkystone_Path3_V3 extends ICE_Controls_2_Mot
                     telemetry.addData(">", "Skystone FOUND!!!!!");
                     telemetry.addData("AngleToTurnTo =", angleToTurnTo);
                     telemetry.update();
-                   // sleep(1000);
+                    // sleep(1000);
                     double angleToAddToAngle = -1 * imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
                     angleToTurnTo -= angleToAddToAngle;
 
@@ -282,10 +185,13 @@ public abstract class DetectAndDriveSkystone_Path3_V3 extends ICE_Controls_2_Mot
                             distanceBackToSecondStone = -50;
                         }
                         //angleToTurnTo -= 4;
+                        /*
                         if(teamColor==-1) {
                             angleToTurnTo = 30 * teamColor;
                             turnOnlyOneAtIntake = true;
                         }
+
+                         */
 
                     }
                     else if(angleToTurnTo>angleOffsetToSideStoneThreshold){
@@ -299,12 +205,13 @@ public abstract class DetectAndDriveSkystone_Path3_V3 extends ICE_Controls_2_Mot
                             distanceBackToCenterLine = -30;
                             distanceBackToSecondStone = -55;
                         }
-                       // angleToTurnTo += 4;
+                        // angleToTurnTo += 4;
+                        /*
                         if(teamColor==1) {
                             angleToTurnTo = 30 * teamColor;
                             turnOnlyOneAtIntake=true;
                         }
-
+                        */
                     }
                     else{
                         distanceToDropOffSkystone=71;
@@ -350,28 +257,27 @@ public abstract class DetectAndDriveSkystone_Path3_V3 extends ICE_Controls_2_Mot
                     //turns -90 degrees  and holds there for 5 seconds
                     gyroDrive(DRIVE_SPEED, -1*DistanceToComeBackAfterStoneIntake, angleToTurnTo,5);
                     //turning right
-                    gyroTurn(TURN_SPEED,-90*teamColor,5);
-                    gyroHold(HOLD_SPEED,-90*teamColor,0.5);
+                    gyroTurn(TURN_SPEED,-270*teamColor,5);
+                    gyroHold(HOLD_SPEED,-270*teamColor,0.5);
 
-                    gyroDrive(DRIVE_SPEED_BOOST,distanceToDropOffSkystone, -90*teamColor,5);
+                    gyroDrive(DRIVE_SPEED_BOOST,distanceToDropOffSkystone, -270*teamColor,5);
                     //Put's servo up to deliver stone
-                    ouTakeStoneForAutonomous(-90*teamColor,2,2);
+                    ouTakeStoneForAutonomous(-270*teamColor,2,2);
                     servoleft.setPosition(1.0);
                     servoright.setPosition(0.0);
                     sleep(1000);
                     //TURN_SPEED=1.0;
                     stopInTakeStone();
-                    gyroDrive(1.0,distanceBackToCenterLine,-90*teamColor,5);
+                    gyroDrive(1.0,distanceBackToCenterLine,-270*teamColor,5);
                     //gyroTurn(TURN_SPEED,0,5);
                     //gyroDrive(DRIVE_SPEED,5,0);
                     break;
 
                 }
             }
-            //CameraDevice.getInstance().setFlashTorchMode(false);
+
 
         }
-    }
 
 
     protected RecognizedObject DetectSkyStoneAndReturnAngle(){
@@ -397,7 +303,7 @@ public abstract class DetectAndDriveSkystone_Path3_V3 extends ICE_Controls_2_Mot
                 //Found Object.....Now break the while loop
                 boolean skystoneFound = false;
                 Recognition stonerecognition = null;
-               // skystoneFound = false;
+                // skystoneFound = false;
 
                 if (updatedRecognitions.size() > 0) {
                     for (Recognition recognition : updatedRecognitions) {
@@ -424,7 +330,7 @@ public abstract class DetectAndDriveSkystone_Path3_V3 extends ICE_Controls_2_Mot
         return recognizedObjectToReturn;
     }
 //end of code/
-  /**
+    /**
      *
      * Initialize the Vuforia localization engine.
      */
@@ -435,7 +341,7 @@ public abstract class DetectAndDriveSkystone_Path3_V3 extends ICE_Controls_2_Mot
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraDirection = CameraDirection.BACK;
+        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
 
         //  Instantiate the Vuforia engine
         vuforia = ClassFactory.getInstance().createVuforia(parameters);

@@ -61,7 +61,7 @@ import java.util.List;
     private double DistanceToMoveForwardFromBackWall = 15;//18
     private double DistanceToGoForwardForStoneIntake = 36;
     private double DistanceToComeBackAfterStoneIntake = 34;
-    private double DistanceToGoBackBeforeDetectingSecondSkyStone = 2;
+    private double DistanceToGoBackBeforeDetectingSecondSkyStone =6;
 
     // private DcMotor leftDrive = null;
         //private DcMotor rightDrive = null;
@@ -107,40 +107,57 @@ import java.util.List;
 
             servoleft.setPosition(1);
             servoright.setPosition(0);
-            gyroHold(DRIVE_SPEED,0,1);
-            gyroDrive(DRIVE_SPEED,25*-1,0,2);
-
-            gyroDriveStopOnTouchSensor(.3,15*-1,0,2);
+           // gyroHold(DRIVE_SPEED,0,1);
+            gyroDrive(DRIVE_SPEED_BOOST,25*-1,0,2);
+            gyroDrive(.3,15*-1,0,2);
+            //gyroDriveStopOnTouchSensor(.3,15*-1,0,2);
 
             //gyroHold(DRIVE_SPEED,0,1);
-            gyroHold(DRIVE_SPEED,0,1);
+            gyroHold(DRIVE_SPEED,0,.5);
             servoleft.setPosition(0);
             servoright.setPosition(1);
             gyroHold(DRIVE_SPEED,0,1);
 
-            gyroDrive(DRIVE_SPEED_BOOST,40,0,2);
+            gyroDrive(DRIVE_SPEED_BOOST,45,0,3);
 
             servoleft.setPosition(1);
             servoright.setPosition(0);
             gyroHold(DRIVE_SPEED,0,1);
 
+            if(teamColor == 1) {
+                intakeMotorLeft.setPower(1.0);
+                intakeMotorRight.setPower(0.0);
+            }
+            else{
+                intakeMotorLeft.setPower(0.0);
+                intakeMotorRight.setPower(1.0);
 
-            intakeMotorLeft.setPower(1.0);
-            intakeMotorRight.setPower(0.0);
-            gyroTurn(0.3,-90*teamColor,5);
+            }
+            gyroTurn(TURN_SPEED_BOOST,-90*teamColor,5);
             gyroDrive(DRIVE_SPEED,30,-90*teamColor,2);
             intakeMotorLeft.setPower(0.0);
+            intakeMotorRight.setPower(0.0);
 
-            gyroTurn(TURN_SPEED,-180*teamColor,5);
+/*WOrking code
+            gyroTurn(TURN_SPEED_BOOST,-180*teamColor,5);
             gyroDrive(DRIVE_SPEED,12,-180*teamColor,2);
-            gyroTurn(TURN_SPEED,-270*teamColor,5);
-            gyroDrive(DRIVE_SPEED,18,-270*teamColor,2);
+            gyroTurn(TURN_SPEED_BOOST,-270*teamColor,5);
+            gyroDrive(DRIVE_SPEED_BOOST,15,-270*teamColor,2);
 
             //Skystone detect code start
-            gyroDrive(DRIVE_SPEED_BOOST,-72,-260*teamColor);
-            gyroTurn(TURN_SPEED,-180,3);
+            gyroDrive(DRIVE_SPEED_BOOST,-62,-260*teamColor);
+            */
+//testing code start
+            gyroTurn(TURN_SPEED_BOOST,-135*teamColor,5);
+            gyroDrive(DRIVE_SPEED_BOOST,17,-135*teamColor,2);
+            gyroTurn(TURN_SPEED_BOOST,-90*teamColor,5);
+
+            //Skystone detect code start
+            gyroDrive(DRIVE_SPEED_BOOST,32,-80*teamColor);
+//teting code end
+            gyroTurn(TURN_SPEED_BOOST,-180,3);
             gyroHold(HOLD_SPEED,-180,0.5);
-            gyroDrive(DRIVE_SPEED,-1*DistanceToGoBackBeforeDetectingSecondSkyStone,-180,2);
+            gyroDrive(DRIVE_SPEED_BOOST,-1*DistanceToGoBackBeforeDetectingSecondSkyStone,-180,2);
 
             ElapsedTime timeToLookForSkyStone = new ElapsedTime();
             timeToLookForSkyStone.reset();
@@ -173,15 +190,15 @@ import java.util.List;
                     if(angleToTurnTo<-1*angleOffsetToSideStoneThreshold){
                         if(teamColor==1) {
                             //red side
-                            distanceToDropOffSkystone = 71;
-                            distanceBackToCenterLine = -20;
+                            distanceToDropOffSkystone = 60;
+                            distanceBackToCenterLine = -25;
                             distanceBackToSecondStone = -50;
                         }
                         else
                         {
                             //blue side
-                            distanceToDropOffSkystone = 71;
-                            distanceBackToCenterLine = -20;
+                            distanceToDropOffSkystone = 60;
+                            distanceBackToCenterLine = -25;
                             distanceBackToSecondStone = -50;
                         }
                         //angleToTurnTo -= 4;
@@ -196,13 +213,13 @@ import java.util.List;
                     }
                     else if(angleToTurnTo>angleOffsetToSideStoneThreshold){
                         if(teamColor==1) {
-                            distanceToDropOffSkystone = 71;
-                            distanceBackToCenterLine = -30;
+                            distanceToDropOffSkystone = 60;
+                            distanceBackToCenterLine = -35;
                             distanceBackToSecondStone = -55;
                         }
                         else {
-                            distanceToDropOffSkystone = 71;
-                            distanceBackToCenterLine = -30;
+                            distanceToDropOffSkystone = 60;
+                            distanceBackToCenterLine = -35;
                             distanceBackToSecondStone = -55;
                         }
                         // angleToTurnTo += 4;
@@ -214,8 +231,8 @@ import java.util.List;
                         */
                     }
                     else{
-                        distanceToDropOffSkystone=71;
-                        distanceBackToCenterLine=-30;
+                        distanceToDropOffSkystone=60;
+                        distanceBackToCenterLine=-35;
                         distanceBackToSecondStone=-50;
                     }
 
@@ -255,13 +272,14 @@ import java.util.List;
 
                      */
                     //turns -90 degrees  and holds there for 5 seconds
-                    gyroDrive(DRIVE_SPEED, -1*DistanceToComeBackAfterStoneIntake, angleToTurnTo,5);
+                    gyroDrive(DRIVE_SPEED_BOOST, -1*DistanceToComeBackAfterStoneIntake, angleToTurnTo,5);
                     //turning right
-                    gyroTurn(TURN_SPEED,-270*teamColor,5);
+                    gyroTurn(TURN_SPEED_BOOST,-270*teamColor,5);
                     gyroHold(HOLD_SPEED,-270*teamColor,0.5);
 
                     gyroDrive(DRIVE_SPEED_BOOST,distanceToDropOffSkystone, -270*teamColor,5);
                     //Put's servo up to deliver stone
+                  // gyroTurn(TURN_SPEED,-235,2);
                     ouTakeStoneForAutonomous(-270*teamColor,2,2);
                     servoleft.setPosition(1.0);
                     servoright.setPosition(0.0);

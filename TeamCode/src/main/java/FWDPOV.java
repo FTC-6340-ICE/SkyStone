@@ -122,10 +122,26 @@ public class FWDPOV extends ICE_Controls_2_Motors {
                     rightMotor.setPower(rightTurboPower);
 
             }
-            if (gamepad2.b) {
+            if (gamepad1.b) {
                 servoCapStone.setPosition(0.0);
 
             }
+            if (gamepad1.a) {
+                servoCapStone.setPosition(1.0);
+
+            }
+            if (gamepad1.y) {
+                servoCapStone2.setPosition(0.0);
+
+            }
+            if (gamepad1.x) {
+                servoCapStone2.setPosition(1.0);
+
+            }
+
+
+
+
 
             // Show the elapsed game time and wheel power.
                 telemetry.addData("Status", "Run Time: " + runtime.toString());

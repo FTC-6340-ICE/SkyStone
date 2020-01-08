@@ -69,6 +69,8 @@ public abstract class ICE_Controls_2_Motors extends LinearOpMode {
     protected Servo   servoleft;
     protected Servo servoright;
     protected Servo servoCapStone;
+    protected Servo servoCapStone2;
+//
 //    protected Servo servoUp;
 
 
@@ -96,7 +98,7 @@ public abstract class ICE_Controls_2_Motors extends LinearOpMode {
     public final double TURN_SPEED = .5;     // Nominal half speed for better accuracy.
     public final double TURN_SPEED_BOOST = .6;     // Nominal half speed for better accuracy.
     public final double HOLD_SPEED = .3;     // Nominal half speed for better accuracy.
-    public final double DRIVE_SPEED_BOOST = .8;
+    public final double DRIVE_SPEED_BOOST = 0.8;
     static final double HEADING_THRESHOLD = 1.5;      // As tight as we can make it with an integer gyro
     static final double P_TURN_COEFF = .009;     // .02 Larger is more responsive, but also less stable
     static final double P_DRIVE_COEFF = .009;     // .009 Larger is more responsive, but also less stable
@@ -153,7 +155,10 @@ public abstract class ICE_Controls_2_Motors extends LinearOpMode {
         servoleft = hardwareMap.get(Servo.class, "leftFoundation");
        // servoUp = hardwareMap.get(Servo.class,"servoUp");
         servoCapStone = hardwareMap.get(Servo.class,"servoCapstone3");
-      //  servoCapStone =hardwareMap.get(Servo.class, "CapStoneServo3");
+        servoCapStone2 = hardwareMap.get(Servo.class,"servoCapstone4");
+
+        //
+        //  servoCapStone =hardwareMap.get(Servo.class, "CapStoneServo3");
         intakeMotorLeft.setDirection(DcMotor.Direction.REVERSE);
         intakeMotorRight.setDirection(DcMotor.Direction.FORWARD);
         digitalTouch.setMode(DigitalChannel.Mode.INPUT);
@@ -352,7 +357,7 @@ public abstract class ICE_Controls_2_Motors extends LinearOpMode {
      * @param speed Desired speed of turn.
      // @param angle      Absolute Angle (in Degrees) relative to last gyro reset.
      *                   0 = fwd. +ve is CCW from fwd. -ve is CW from forward.
-     *                   If a relative angle is required, add/subtract from current heading.
+     *                   If a relative angle Fs required, add/subtract from current heading.
      */
 
 
@@ -654,8 +659,8 @@ public abstract class ICE_Controls_2_Motors extends LinearOpMode {
     }
 
     public void ouTakeStone(){
-        intakeMotorLeft.setPower(1.0);
-        intakeMotorRight.setPower(1.0);
+        intakeMotorLeft.setPower(0.3);
+        intakeMotorRight.setPower(0.3);
 
     }
     public void stopInTakeStone(){
@@ -666,8 +671,8 @@ public abstract class ICE_Controls_2_Motors extends LinearOpMode {
 
     public void ouTakeStoneForAutonomous(double heading,double timeout,double distance){
         gyroDrive(DRIVE_SPEED,distance,heading,timeout);
-        intakeMotorLeft.setPower(1.0);
-        intakeMotorRight.setPower(1.0);
+        intakeMotorLeft.setPower(0.4);
+        intakeMotorRight.setPower(0.4);
 
     }
 

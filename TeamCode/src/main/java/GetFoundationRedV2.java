@@ -1,3 +1,6 @@
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+
+;
 /* Copyright (c) 2017 FIRST. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -26,34 +29,15 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+//import all assets neccesary//
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
-
-import org.firstinspires.ftc.teamcode.ICE_Controls_2_Motors;
-
-
-@Autonomous(name="Contingetcy plan for circut", group="Linear Opmode")
+//name of program that shows up on phone,group linear of iterative//
+@Autonomous(name="GetFoundationRedV2WithVuforia", group="Linear Opmode")
 //@Disabled
-public class Forward_Backward extends ICE_Controls_2_Motors {
+public class GetFoundationRedV2 extends GetFoundationV2WithVufroria{
 
-    private ElapsedTime runtime = new ElapsedTime();
-
-
-
-    @Override
-    public void runOpMode() {
-        telemetry.addData("Status", "Initialized");
-        telemetry.update();
-        initializeHardware();
-
-        waitForStart();
-        runtime.reset();
-gyroDrive(DRIVE_SPEED,12,0,5);
-
+    public GetFoundationRedV2()
+    {
+       super(1);
     }
 }

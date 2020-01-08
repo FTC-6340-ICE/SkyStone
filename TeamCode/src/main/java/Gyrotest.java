@@ -33,6 +33,10 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.teamcode.VuforiaStuff;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
@@ -49,11 +53,24 @@ import org.firstinspires.ftc.teamcode.ICE_Controls_2_Motors;
         //private DcMotor rightDrive = null;
         //DcMotor leftMotor;
         //DcMotor rightMotor;
-
+        private VuforiaLocalizer vuforia;
+    public VuforiaStuff vuforiaStuff;
         @Override
         public void runOpMode() {
-        initializeHardware();
-            telemetry.addData("Status", "Initialized");
+        //initializeHardware();
+            int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+            VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+
+            parameters.vuforiaLicenseKey = VUFORIA_KEY;
+            parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
+
+            //  Instantiate the Vuforia engine
+            vuforia = ClassFactory.getInstance().createVuforia(parameters);
+            vuforiaStuff = new VuforiaStuff(vuforia);
+            VuforiaStuff.skystonePos pos;
+            pos = vuforiaStuff.vuforiascan(true, true);
+
+            telemetry.addData("Position of Stone" , pos );
             telemetry.update();
 
 
@@ -78,24 +95,17 @@ import org.firstinspires.ftc.teamcode.ICE_Controls_2_Motors;
 //sleep(1500);
   //        servoright.setPosition(1);
     //gyroDrive(DRIVE_SPEED,12,0,5);
+            while(opModeIsActive()) {
+                gyroHold(DRIVE_SPEED, 0, 2);
+                telemetry.addData("movecountsintakemotorRIght", intakeMotorRight.getCurrentPosition());
+                telemetry.addData("movecountsIntakeMotorLeft", intakeMotorLeft.getCurrentPosition());
+                telemetry.addData("movecountsLeftMotor", leftMotor.getCurrentPosition());
+                telemetry.addData("movecountsRightMotor", rightMotor.getCurrentPosition());
 
-            gyroHold(DRIVE_SPEED,0,2);
-            telemetry.addData("movecounts",leftMotor.getCurrentPosition());
-            telemetry.update();
-            sleep(5000);
+                telemetry.update();
+                sleep(3000);
 
-            gyroDrive(DRIVE_SPEED,20,0);
-            telemetry.addData("movecounts",leftMotor.getCurrentPosition());
-            telemetry.update();
-
-            sleep(5000);
-
-            gyroHold(DRIVE_SPEED,0,2);
-
-
-
-
-
+            }
 
 
             //        servoleft.setPosition(0);

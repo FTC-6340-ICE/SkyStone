@@ -65,8 +65,9 @@ public abstract class DetectAndDriveSkystone_Path3_V3 extends ICE_Controls_2_Mot
     private double CameraDistanceToStones = 37;
     private double DistanceToMoveForwardFromBackWall = 15;//18
     private double DistanceToGoForwardForStoneIntake = 36;
-    private double DistanceToComeBackAfterStoneIntake = 25;
-    private double DistanceToGoBackBeforeDetectingSecondSkyStone = 8;
+    private double DistanceToComeBackAfterStoneIntake = 28;
+    private double DistanceToGoBackBeforeDetectingSecondSkyStone = 6;
+    private boolean inDebugMode = false;
     @Override
 //what shows up on your phone//
     public void runOpMode() {
@@ -132,20 +133,26 @@ public abstract class DetectAndDriveSkystone_Path3_V3 extends ICE_Controls_2_Mot
                     double angleToTurnTo;
 
                     if(recognizedObject.skystoneFound) {
-                        angleToTurnTo = -1 * (recognizedObject.skystoneFoundAngle-angleToAdjustDueToPhoneOffset);
+                        angleToTurnTo = -1 * (recognizedObject.skystoneFoundAngle+angleToAdjustDueToPhoneOffset);
 
                     }
                     else
                     {
                         angleToTurnTo = 0;
                     }
-                    telemetry.addData(">", "Skystone FOUND!!!!!");
-                    telemetry.addData("AngleToTurnTo =", angleToTurnTo);
-                    telemetry.update();
-                   sleep(5000);
+
                     double angleToAddToAngle = -1 * imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
                     angleToTurnTo -= angleToAddToAngle;
 
+                    telemetry.addData(">", "Skystone FOUND!!!!!");
+                    telemetry.addData("AngleToTurnTo =", angleToTurnTo);
+                    telemetry.addData("angleToAdjustDueToPhoneOffset", angleToAdjustDueToPhoneOffset);
+                    telemetry.addData("angleToAddToAngle", angleToAddToAngle);
+                    telemetry.addData("skystoneFoundAngle", recognizedObject.skystoneFoundAngle);
+
+                    telemetry.update();
+                    if(inDebugMode)
+                        sleep(5000);
                     double distanceToDropOffSkystone = 0;
                     double distanceBackToCenterLine = 0;
                     double distanceBackToSecondStone = 0;
@@ -154,15 +161,15 @@ public abstract class DetectAndDriveSkystone_Path3_V3 extends ICE_Controls_2_Mot
                     if(angleToTurnTo<-1*angleOffsetToSideStoneThreshold){
                         if(teamColor==1) {
                             //red side
-                            distanceToDropOffSkystone = 40;
+                            distanceToDropOffSkystone = 35;
                             distanceBackToCenterLine = -10;
-                            distanceBackToSecondStone = -65;
+                            distanceBackToSecondStone = -71;
                         }
                         else {
                             //blue side
-                            distanceToDropOffSkystone = 40;
+                            distanceToDropOffSkystone = 50;
                             distanceBackToCenterLine = -10;
-                            distanceBackToSecondStone = -65;
+                            distanceBackToSecondStone = -71;
                         }
                         //angleToTurnTo -= 4;
                     }
@@ -170,31 +177,31 @@ public abstract class DetectAndDriveSkystone_Path3_V3 extends ICE_Controls_2_Mot
                     else if(angleToTurnTo>angleOffsetToSideStoneThreshold){
                         if(teamColor==1) {
                             //red side
-                            distanceToDropOffSkystone = 41;
+                            distanceToDropOffSkystone = 35;
                             distanceBackToCenterLine = -15;
-                            distanceBackToSecondStone = -66;
+                            distanceBackToSecondStone = -72;
                         }
                         else
                         {
                             //blue sides
-                            distanceToDropOffSkystone = 41;
+                            distanceToDropOffSkystone = 54;
                             distanceBackToCenterLine = -15;
-                            distanceBackToSecondStone = -66;
+                            distanceBackToSecondStone = -72;
                         }
                        // angleToTurnTo += 4;
 
                     }
 //Middle
                     else{
-                        distanceToDropOffSkystone=40;
+                        distanceToDropOffSkystone=54;
                         distanceBackToCenterLine=-10;
-                        distanceBackToSecondStone=-65;
+                        distanceBackToSecondStone=-72;
                     }
 
                     telemetry.addData(">", "Skystone FOUND!!!!!");
                     telemetry.addData("NEW AngleToTurnTo =", angleToTurnTo);
                     telemetry.update();
-                    sleep(5000);
+  //                  sleep(5000);
 
                     gyroTurn(TURN_SPEED,angleToTurnTo,5);
                     gyroHold(HOLD_SPEED,angleToTurnTo,0.5);
@@ -218,21 +225,25 @@ public abstract class DetectAndDriveSkystone_Path3_V3 extends ICE_Controls_2_Mot
 
                     */
                     stopInTakeStone();
-                    gyroDrive(DRIVE_SPEED_BOOST, -1*DistanceToComeBackAfterStoneIntake, angleToTurnTo,5);
+                    gyroTurn(TURN_SPEED,0,5);
+
+                    gyroHold(HOLD_SPEED,0,0.5);
+
+                    gyroDrive(DRIVE_SPEED_BOOST, -1*DistanceToComeBackAfterStoneIntake, 0,5);
                     //turning right
                    // stopInTakeStone();
                     gyroTurn(TURN_SPEED,-90*teamColor,5);
                     gyroHold(HOLD_SPEED,-90*teamColor,0.5);
-                    gyroDrive(DRIVE_SPEED_BOOST,distanceToDropOffSkystone, -90*teamColor,5);
+                    gyroDrive(DRIVE_SPEED_BOOST_AUTONOMOUS,distanceToDropOffSkystone, -90*teamColor,5);
                     ouTakeStoneForAutonomous(-90*teamColor,2,-5);
                     //Put's servo up to deliver stone
                     //servoleft.setPosition(1.0);
                     //servoright.setPosition(0.0);
-                    //sleep(1000);
                     sleep(500);
+
                     stopInTakeStone();
-                    gyroHold(HOLD_SPEED,-85,0.5);
-                    gyroDrive(DRIVE_SPEED_BOOST,distanceBackToSecondStone,-85*teamColor);
+                    gyroHold(HOLD_SPEED,-80*teamColor,0.5);
+                    gyroDrive(DRIVE_SPEED_BOOST,distanceBackToSecondStone,-80*teamColor);
                     gyroTurn(TURN_SPEED,0,3);
                     gyroHold(HOLD_SPEED,0,0.5);
                     gyroDrive(DRIVE_SPEED,-1*DistanceToGoBackBeforeDetectingSecondSkyStone,0,2);
@@ -252,7 +263,7 @@ public abstract class DetectAndDriveSkystone_Path3_V3 extends ICE_Controls_2_Mot
                     //double angleToTurnTo = -1 * stonerecognition.estimateAngleToObject(AngleUnit.DEGREES);
                     double angleToTurnTo;
                     if(recognizedObject.skystoneFound) {
-                        angleToTurnTo = -1 * (recognizedObject.skystoneFoundAngle-angleToAdjustDueToPhoneOffset);
+                        angleToTurnTo = -1 * (recognizedObject.skystoneFoundAngle+angleToAdjustDueToPhoneOffset);
                     }
                     else
                     {
@@ -261,9 +272,19 @@ public abstract class DetectAndDriveSkystone_Path3_V3 extends ICE_Controls_2_Mot
                     telemetry.addData(">", "Skystone FOUND!!!!!");
                     telemetry.addData("AngleToTurnTo =", angleToTurnTo);
                     telemetry.update();
-                   sleep(5000);
+                   //sleep(5000);
                     double angleToAddToAngle = -1 * imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
                     angleToTurnTo -= angleToAddToAngle;
+
+                    telemetry.addData(">", "Skystone FOUND!!!!!");
+                    telemetry.addData("AngleToTurnTo =", angleToTurnTo);
+                    telemetry.addData("angleToAdjustDueToPhoneOffset", angleToAdjustDueToPhoneOffset);
+                    telemetry.addData("angleToAddToAngle", angleToAddToAngle);
+                    telemetry.addData("skystoneFoundAngle", recognizedObject.skystoneFoundAngle);
+
+                    telemetry.update();
+                    if(inDebugMode)
+                        sleep(5000);
 
                     double distanceToDropOffSkystone = 0;
                     double distanceBackToCenterLine = 0;
@@ -272,7 +293,7 @@ public abstract class DetectAndDriveSkystone_Path3_V3 extends ICE_Controls_2_Mot
                     if(angleToTurnTo<-1*angleOffsetToSideStoneThreshold){
                         if(teamColor==1) {
                             //red side
-                            distanceToDropOffSkystone = 71;
+                            distanceToDropOffSkystone = 55;
                             distanceBackToCenterLine = -20;
                             distanceBackToSecondStone = -50;
                         }
@@ -292,8 +313,8 @@ public abstract class DetectAndDriveSkystone_Path3_V3 extends ICE_Controls_2_Mot
                     }
                     else if(angleToTurnTo>angleOffsetToSideStoneThreshold){
                         if(teamColor==1) {
-                            distanceToDropOffSkystone = 71;
-                            distanceBackToCenterLine = -30;
+                            distanceToDropOffSkystone = 55;
+                            distanceBackToCenterLine = -20;
                             distanceBackToSecondStone = -55;
                         }
                         else {
@@ -350,17 +371,24 @@ public abstract class DetectAndDriveSkystone_Path3_V3 extends ICE_Controls_2_Mot
 
                      */
                     //turns -90 degrees  and holds there for 5 seconds
-                    gyroDrive(DRIVE_SPEED, -1*DistanceToComeBackAfterStoneIntake, angleToTurnTo,5);
+                  //  gyroDrive(DRIVE_SPEED, -1*DistanceToComeBackAfterStoneIntake, angleToTurnTo,5);
                     //turning right
+                    gyroTurn(TURN_SPEED,0,5);
+
+                    gyroHold(HOLD_SPEED,0,0.5);
+
+                    gyroDrive(DRIVE_SPEED_BOOST, -1*DistanceToComeBackAfterStoneIntake, 0,5);
+
+
                     gyroTurn(TURN_SPEED,-90*teamColor,5);
                     gyroHold(HOLD_SPEED,-90*teamColor,0.5);
 
-                    gyroDrive(DRIVE_SPEED_BOOST,distanceToDropOffSkystone, -90*teamColor,5);
+                    gyroDrive(DRIVE_SPEED_BOOST_AUTONOMOUS,distanceToDropOffSkystone, -90*teamColor,5);
                     //Put's servo up to deliver stone
                     ouTakeStoneForAutonomous(-90*teamColor,2,2);
-                    servoleft.setPosition(1.0);
-                    servoright.setPosition(0.0);
-                    sleep(1000);
+                   // servoleft.setPosition(1.0);
+                    //servoright.setPosition(0.0);
+                    sleep(500);
                     //TURN_SPEED=1.0;
                     stopInTakeStone();
                     gyroDrive(1.0,distanceBackToCenterLine,-90*teamColor,5);

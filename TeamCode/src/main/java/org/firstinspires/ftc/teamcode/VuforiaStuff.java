@@ -115,19 +115,33 @@ public class VuforiaStuff {
 
             if (red) {
                // cropStartX = (int) ((120.0 / 720.0) * bitmap.getWidth());
-                 cropStartX = (int) ((151.0/ 1280.0) * bitmap.getWidth()); ;
+                 cropStartX = (int) ((261.0/ 1280.0) * bitmap.getWidth()); ;
 
 //                cropStartY = (int) ((100.0 / 480.0) * bitmap.getHeight());
-                cropStartY = (int) ((371.0 / 720.0) * bitmap.getHeight());
+                cropStartY = (int) ((360.0 / 720.0) * bitmap.getHeight());
 
-                cropWidth = (int) ((940.0 / 1280.0) * bitmap.getWidth());
-                cropHeight = (int) ((115.0 / 720.0) * bitmap.getHeight());
+                cropWidth = (int) ((705.0 / 1280.0) * bitmap.getWidth());
+                cropHeight = (int) ((80.0 / 720.0) * bitmap.getHeight());
             } else {
-                cropStartX = (int) ((158.0 / 1280.0) * bitmap.getWidth());
-                cropStartY = (int) ((377.0 / 720.0) * bitmap.getHeight());
-                cropWidth = (int) ((1076.0 / 1280.0) * bitmap.getWidth());
-                cropHeight = (int) ((115.0 / 720.0) * bitmap.getHeight());
+                cropStartX = (int) ((301.0 / 1280.0) * bitmap.getWidth());
+                cropStartY = (int) ((343.0 / 720.0) * bitmap.getHeight());
+                cropWidth = (int) ((685.0 / 1280.0) * bitmap.getWidth());
+                cropHeight = (int) ((73.0 / 720.0) * bitmap.getHeight());
             }
+
+         /*   if (red) {
+                cropStartX = (int) ((120.0 / 720.0) * bitmap.getWidth());
+                cropStartY = (int) ((100.0 / 480.0) * bitmap.getHeight());
+                cropWidth = (int) ((590.0 / 720.0) * bitmap.getWidth());
+                cropHeight = (int) ((170.0 / 480.0) * bitmap.getHeight());
+            } else {
+                cropStartX = (int) ((370.0 / 1280.0) * bitmap.getWidth());
+                cropStartY = (int) ((130.0 / 720.0) * bitmap.getHeight());
+                cropWidth = (int) ((890.0 / 1280.0) * bitmap.getWidth());
+                cropHeight = (int) ((165.0 / 720.0) * bitmap.getHeight());
+            }
+*/
+
 
             DbgLog.msg("10435 vuforiascan"
                     + " cropStartX: " + cropStartX

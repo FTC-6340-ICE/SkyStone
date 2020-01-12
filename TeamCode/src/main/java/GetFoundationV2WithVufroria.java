@@ -100,15 +100,6 @@ import java.util.List;
         //if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
         //initTfod();
         // } else {
-        telemetry.addData("Sorry!", "This device is not compatible with TFOD");
-        // }
-        /**
-         * Activate TensorFlow Object Detection before we wait for the start command.
-         * Do it here so that the Camera Stream window will have the TensorFlow annotations visible.
-         **/
-        //if (tfod != null) {
-        //  tfod.activate();
-        //}
 
 
         waitForStart();

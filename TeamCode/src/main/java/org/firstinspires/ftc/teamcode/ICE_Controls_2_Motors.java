@@ -99,6 +99,8 @@ public abstract class ICE_Controls_2_Motors extends LinearOpMode {
     public final double TURN_SPEED_BOOST = .6;     // Nominal half speed for better accuracy.
     public final double HOLD_SPEED = .3;     // Nominal half speed for better accuracy.
     public final double DRIVE_SPEED_BOOST = 0.8;
+    public final double DRIVE_SPEED_BOOST_AUTONOMOUS = 1.0;
+
     static final double HEADING_THRESHOLD = 1.5;      // As tight as we can make it with an integer gyro
     static final double P_TURN_COEFF = .009;     // .02 Larger is more responsive, but also less stable
     static final double P_DRIVE_COEFF = .009;     // .009 Larger is more responsive, but also less stable
@@ -155,7 +157,7 @@ public abstract class ICE_Controls_2_Motors extends LinearOpMode {
         servoleft = hardwareMap.get(Servo.class, "leftFoundation");
        // servoUp = hardwareMap.get(Servo.class,"servoUp");
         servoCapStone = hardwareMap.get(Servo.class,"servoCapstone3");
-        servoCapStone2 = hardwareMap.get(Servo.class,"servoCapstone4");
+       // servoCapStone2 = hardwareMap.get(Servo.class,"servoCapstone4");
 
         //
         //  servoCapStone =hardwareMap.get(Servo.class, "CapStoneServo3");

@@ -33,10 +33,10 @@ public abstract class Two_Stone_V4_WithVuforia extends ICE_Controls_2_Motors {
     private double CameraDistanceAwayFromBack =10;
     private double CameraDistanceToStones = 37;
    // private double DistanceToMoveForwardFromBackWall = 15;//18
-    private double DistanceToGoForwardForFirstStoneIntake = 40;
-    private double DistanceToComeBackAfterFirstStoneIntake = 20;
-    private double DistanceToGoForwardForSecondStoneIntake = 28;
-    private double DistanceToComeBackAfterSecondStoneIntake = 26;
+    private double DistanceToGoForwardForFirstStoneIntake = 50;
+    private double DistanceToComeBackAfterFirstStoneIntake = 22;
+    private double DistanceToGoForwardForSecondStoneIntake = 32;
+    private double DistanceToComeBackAfterSecondStoneIntake = 28;
 
     private double DistanceToGoBackBeforeDetectingSecondSkyStone = 6;
     private boolean inDebugMode = false;
@@ -49,6 +49,8 @@ public abstract class Two_Stone_V4_WithVuforia extends ICE_Controls_2_Motors {
     public void runOpMode() {
         initializeHardware();
        // initVuforia();
+//        servoLeftRight.setPosition(0.0);
+
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
 
@@ -65,6 +67,15 @@ public abstract class Two_Stone_V4_WithVuforia extends ICE_Controls_2_Motors {
         double oppositeSide = 8;//Width of a Stone
        // double angleOffsetToSideStoneThreshold = Math.toDegrees(Math.atan(oppositeSide/adjacentSide))/2;
         double angleToTurnToForFirstStone = Math.toDegrees(Math.atan(oppositeSide / adjacentSide)) ;
+        double angleToTurnToForFirstStoneWhenCloserToOtherStones;
+        if(teamColor==1)
+            //red side
+            angleToTurnToForFirstStoneWhenCloserToOtherStones = Math.toDegrees(Math.atan(oppositeSide / adjacentSide)) /2 +2;
+        else
+            //blue side
+            angleToTurnToForFirstStoneWhenCloserToOtherStones = Math.toDegrees(Math.atan(oppositeSide / adjacentSide)) /2 +3;
+
+
      //   double angleToAdjustDueToPhoneOffset = Math.toDegrees(Math.atan(CameraOffSetDistaceFromMiddle/adjacentSide));
         // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
         // first.
@@ -109,13 +120,16 @@ public abstract class Two_Stone_V4_WithVuforia extends ICE_Controls_2_Motors {
 
                     if (pos == VuforiaStuff.skystonePos.CENTER) {
                         angleToTurnToForFirstStone = 0;
+                        angleToTurnToForFirstStoneWhenCloserToOtherStones = 0;
                     }
                     if (pos == VuforiaStuff.skystonePos.RIGHT) {
                         angleToTurnToForFirstStone = (angleToTurnToForFirstStone * -1);
+                        angleToTurnToForFirstStoneWhenCloserToOtherStones = angleToTurnToForFirstStoneWhenCloserToOtherStones *-1;
 
 
                     } else {
                         angleToTurnToForFirstStone = angleToTurnToForFirstStone;
+                        angleToTurnToForFirstStoneWhenCloserToOtherStones = angleToTurnToForFirstStoneWhenCloserToOtherStones;
 
 
                     }
@@ -129,19 +143,24 @@ public abstract class Two_Stone_V4_WithVuforia extends ICE_Controls_2_Motors {
                     double distanceBackToCenterLine = 0;
                     double distanceBackToSecondStone = 0;
                    //right side664
-
+//FIRST LOOP
                     if (pos == VuforiaStuff.skystonePos.RIGHT) {
                         if(teamColor==1) {
                             //red side
                             distanceToDropOffSkystone = 35;
                             distanceBackToCenterLine = -10;
-                            distanceBackToSecondStone = -68;
+                            distanceBackToSecondStone = -67;
+                            DistanceToComeBackAfterFirstStoneIntake = 23;
                         }
                         else {
                             //blue side
-                            distanceToDropOffSkystone = 50;
-                            distanceBackToCenterLine = -10;
-                            distanceBackToSecondStone = -71;
+                            distanceToDropOffSkystone = 46;
+                            distanceBackToCenterLine = -15;
+                            distanceBackToSecondStone = -58;
+                            angleToTurnToForFirstStone = angleToTurnToForFirstStoneWhenCloserToOtherStones;
+                            DistanceToGoForwardForFirstStoneIntake = 53;
+                            DistanceToComeBackAfterFirstStoneIntake = 24;
+
                         }
                         //angleToTurnTo -= 4;
                     }
@@ -149,25 +168,37 @@ public abstract class Two_Stone_V4_WithVuforia extends ICE_Controls_2_Motors {
                     else if (pos == VuforiaStuff.skystonePos.LEFT) {
                         if(teamColor==1) {
                             //red side
-                            distanceToDropOffSkystone = 35;
+                            distanceToDropOffSkystone = 53;
                             distanceBackToCenterLine = -15;
-                            distanceBackToSecondStone = -72;
+                            distanceBackToSecondStone = -66;
+                            angleToTurnToForFirstStone = angleToTurnToForFirstStoneWhenCloserToOtherStones;
+                            DistanceToComeBackAfterFirstStoneIntake = 24;
                         }
                         else
                         {
                             //blue sides
-                            distanceToDropOffSkystone = 54;
-                            distanceBackToCenterLine = -15;
-                            distanceBackToSecondStone = -72;
+                            distanceToDropOffSkystone = 35;
+                            distanceBackToCenterLine = -10;
+                            distanceBackToSecondStone = -70;
                         }
+
 
                     }
 //Middle
                     else{
-                        distanceToDropOffSkystone=54;
+                        distanceToDropOffSkystone=44;
                         distanceBackToCenterLine=-10;
-                        distanceBackToSecondStone=-75;
+                        if(teamColor==1) {
+                            distanceBackToSecondStone = -62;
+                            DistanceToComeBackAfterFirstStoneIntake = 22;
+                        }
+                        else {
+                            distanceBackToSecondStone = -66;
+                            DistanceToComeBackAfterFirstStoneIntake = 21;
+
+                        }
                         DistanceToGoForwardForFirstStoneIntake = 45;
+
                     }
 
                     telemetry.addData(">", "Skystone FOUND!!!!!");
@@ -177,31 +208,43 @@ public abstract class Two_Stone_V4_WithVuforia extends ICE_Controls_2_Motors {
 
                     gyroTurn(TURN_SPEED,angleToTurnToForFirstStone,5);
                     gyroHold(HOLD_SPEED,angleToTurnToForFirstStone,0.5);
-                    inTakeStone();
+                    //inTakeStone();
+
+                inTakeStoneAutonomous();
                     gyroDrive(DRIVE_SPEED, DistanceToGoForwardForFirstStoneIntake, angleToTurnToForFirstStone,2);
                     stopInTakeStone();
-                    gyroTurn(TURN_SPEED,0,5);
+                servoLeftRight.setPosition(0.0);
+
+                gyroTurn(TURN_SPEED,0,5);
 
                     gyroHold(HOLD_SPEED,0,0.5);
 
-                    gyroDrive(DRIVE_SPEED_BOOST, -1*DistanceToComeBackAfterFirstStoneIntake, 0,5);
+                    gyroDrive(DRIVE_SPEED, -1*DistanceToComeBackAfterFirstStoneIntake, 0,5);
                     //turning right
                    // stopInTakeStone();
                     gyroTurn(TURN_SPEED,-90*teamColor,5);
                     gyroHold(HOLD_SPEED,-90*teamColor,0.5);
-                    gyroDrive(DRIVE_SPEED_BOOST_AUTONOMOUS,distanceToDropOffSkystone, -90*teamColor,5);
+                    gyroDrive(DRIVE_SPEED,distanceToDropOffSkystone, -90*teamColor,5);
                     ouTakeStoneForAutonomous(-90*teamColor,2,-5);
                     //Put's servo up to deliver stone
                     //servoleft.setPosition(1.0);
                     //servoright.setPosition(0.0);
                     sleep(500);
+                    //Robot favoring one side. Adjusting for that.
+                    int angleForReturn=0;
+                    if(teamColor==1)
+                        angleForReturn=80;
+                    else
+                        angleForReturn=85;
+                    gyroTurn(TURN_SPEED,-angleForReturn*teamColor,5);
+                    gyroHold(HOLD_SPEED,-angleForReturn*teamColor,0.5);
 
                     stopInTakeStone();
-                    gyroHold(HOLD_SPEED,-80*teamColor,0.5);
+                    gyroHold(HOLD_SPEED,-angleForReturn*teamColor,0.5);
 
-                gyroTurn(HOLD_SPEED,-80*teamColor,0.5);
+                gyroTurn(HOLD_SPEED,-angleForReturn*teamColor,0.5);
 
-                    gyroDrive(DRIVE_SPEED_BOOST,distanceBackToSecondStone,-80*teamColor);
+                    gyroDrive(DRIVE_SPEED,distanceBackToSecondStone,-angleForReturn*teamColor);
                     gyroTurn(TURN_SPEED,0,3);
                     gyroHold(HOLD_SPEED,0,0.5);
                     //gyroDrive(DRIVE_SPEED,-1*DistanceToGoBackBeforeDetectingSecondSkyStone,0,2);
@@ -221,6 +264,13 @@ public abstract class Two_Stone_V4_WithVuforia extends ICE_Controls_2_Motors {
                     //double angleToTurnTo = -1 * stonerecognition.estimateAngleToObject(AngleUnit.DEGREES);
                     double angleToTurnToForSecondStone;
                       angleToTurnToForSecondStone = 23;
+                double angleToTurnToForSecondStoneWhenCloserToOtherStones;
+                if(teamColor==1)
+                    //red side
+                    angleToTurnToForSecondStoneWhenCloserToOtherStones = 12;
+                else
+                    //blue side
+                    angleToTurnToForSecondStoneWhenCloserToOtherStones = 18;
 
                     double distanceToDropOffSkystone = 0;
                     double distanceBackToCenterLine = 0;
@@ -228,68 +278,91 @@ public abstract class Two_Stone_V4_WithVuforia extends ICE_Controls_2_Motors {
                     boolean turnOnlyOneAtIntake = false;
                     if (pos == VuforiaStuff.skystonePos.CENTER) {
                         angleToTurnToForSecondStone = 0;
+                        angleToTurnToForSecondStoneWhenCloserToOtherStones = 0;
                     }
                     if (pos == VuforiaStuff.skystonePos.RIGHT) {
                         angleToTurnToForSecondStone = (angleToTurnToForSecondStone * -1);
+                        angleToTurnToForSecondStoneWhenCloserToOtherStones = angleToTurnToForSecondStoneWhenCloserToOtherStones * -1;
 
 
                     } else {
                         angleToTurnToForSecondStone = angleToTurnToForSecondStone;
+                        angleToTurnToForSecondStoneWhenCloserToOtherStones = angleToTurnToForSecondStoneWhenCloserToOtherStones;
 
 
                     }
 
 
-
+//SECOND LOOP
                 if (pos == VuforiaStuff.skystonePos.RIGHT) {
 
                     if(teamColor==1) {
                             //red side
-                            distanceToDropOffSkystone = 65;
-                            distanceBackToCenterLine = -25;
+                            distanceToDropOffSkystone = 55;
+                            distanceBackToCenterLine = -15;
                             distanceBackToSecondStone = -50;
+                        DistanceToComeBackAfterSecondStoneIntake = 25;
+
                         }
                         else
                         {
                             //blue side
-                            distanceToDropOffSkystone = 71;
-                            distanceBackToCenterLine = -20;
+                            distanceToDropOffSkystone = 65;
+                            distanceBackToCenterLine = -15;
                             distanceBackToSecondStone = -50;
                         }
                         if(teamColor==-1) {
                             angleToTurnToForSecondStone = 0 * teamColor;
+                            angleToTurnToForSecondStone = angleToTurnToForSecondStoneWhenCloserToOtherStones;
                          //   turnOnlyOneAtIntake = true;
+                            DistanceToComeBackAfterSecondStoneIntake = 25;
                         }
 
                     }
                 else if (pos == VuforiaStuff.skystonePos.LEFT) {
                         if(teamColor==1) {
-                            distanceToDropOffSkystone = 55;
-                            distanceBackToCenterLine = -20;
+                            distanceToDropOffSkystone = 65;
+                            distanceBackToCenterLine = -15;
                             distanceBackToSecondStone = -55;
+
                         }
                         else {
-                            distanceToDropOffSkystone = 71;
-                            distanceBackToCenterLine = -30;
+                            distanceToDropOffSkystone = 45;
+                            distanceBackToCenterLine = -15;
                             distanceBackToSecondStone = -55;
+                            DistanceToComeBackAfterSecondStoneIntake = 25;
+
                         }
                     if(teamColor==1) {
                         angleToTurnToForSecondStone = 0 * teamColor;
+                        angleToTurnToForSecondStone = angleToTurnToForSecondStoneWhenCloserToOtherStones;
+                        DistanceToComeBackAfterSecondStoneIntake = 20;
+
                     }
 
                     }
                     else{
-                        distanceToDropOffSkystone=71;
-                        distanceBackToCenterLine=-30;
-                        distanceBackToSecondStone=-50;
+                        if(teamColor==1) {
+                            distanceToDropOffSkystone = 60;
+                            DistanceToComeBackAfterSecondStoneIntake = 25;
+                            distanceBackToCenterLine=-15;
+
+                        }
+                        else {
+                            DistanceToComeBackAfterSecondStoneIntake = 25;
+
+                            distanceToDropOffSkystone = 55;
+                            distanceBackToCenterLine = -15;
+                            distanceBackToSecondStone = -50;
+                        }
                     }
 
 
                     gyroTurn(TURN_SPEED, angleToTurnToForSecondStone, 5);
                     gyroHold(HOLD_SPEED, angleToTurnToForSecondStone, 0.5);
-                    inTakeStone(turnOnlyOneAtIntake,teamColor);
-                    inTakeStone();
-
+                    //inTakeStone(turnOnlyOneAtIntake,teamColor);
+                    //inTakeStone();
+                    inTakeStoneAutonomous();
                     gyroDrive(DRIVE_SPEED, DistanceToGoForwardForSecondStoneIntake, angleToTurnToForSecondStone,2);
                     stopInTakeStone();
                     //turns -90 degrees  and holds there for 5 seconds
@@ -303,7 +376,7 @@ public abstract class Two_Stone_V4_WithVuforia extends ICE_Controls_2_Motors {
                     gyroTurn(TURN_SPEED,-90*teamColor,5);
                     gyroHold(HOLD_SPEED,-90*teamColor,0.5);
 
-                    gyroDrive(DRIVE_SPEED_BOOST_AUTONOMOUS,distanceToDropOffSkystone, -90*teamColor,5);
+                    gyroDrive(DRIVE_SPEED_BOOST,distanceToDropOffSkystone, -90*teamColor,5);
                     //Put's servo up to deliver stone
                     ouTakeStoneForAutonomous(-90*teamColor,2,2);
                    // servoleft.setPosition(1.0);
@@ -311,7 +384,19 @@ public abstract class Two_Stone_V4_WithVuforia extends ICE_Controls_2_Motors {
                     sleep(500);
                     //TURN_SPEED=1.0;
                     stopInTakeStone();
-                    gyroDrive(1.0,distanceBackToCenterLine,-90*teamColor,5);
+                    if(teamColor==-1)
+                    {
+                        gyroHold(HOLD_SPEED, -100 * teamColor, 0.5);
+                        gyroDrive(1.0, distanceBackToCenterLine, -100 * teamColor, 5);
+
+                        //blue side
+                    }
+                    else
+                {
+                    //red side
+                    gyroHold(HOLD_SPEED, -90 * teamColor, 0.5);
+                    gyroDrive(1.0, distanceBackToCenterLine, -90 * teamColor, 5);
+                }
                     //gyroTurn(TURN_SPEED,0,5);
                     //gyroDrive(DRIVE_SPEED,5,0);
                     break;

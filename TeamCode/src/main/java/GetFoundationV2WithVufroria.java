@@ -122,7 +122,7 @@ import java.util.List;
         //gyroHold(DRIVE_SPEED,0,1);
         gyroTurn(TURN_SPEED_BOOST, 0, 1);
         gyroHold(DRIVE_SPEED, 0, .5);
-        gyroDrive(.3, 16 * -1, 0, 2);
+        gyroDrive(.3, 18 * -1, 0, 2);
 
         servoleft.setPosition(0);
         servoright.setPosition(1);

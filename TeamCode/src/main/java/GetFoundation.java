@@ -61,7 +61,7 @@ import java.util.List;
     private double DistanceToMoveForwardFromBackWall = 15;//18
     private double DistanceToGoForwardForStoneIntake = 36;
     private double DistanceToComeBackAfterStoneIntake = 25;
-    private double DistanceToGoBackBeforeDetectingSecondSkyStone =5;
+    private double DistanceToGoBackBeforeDetectingSecondSkyStone =9;
     private double AngleToTurnToForTelemetry = 0;
     // private DcMotor leftDrive = null;
         //private DcMotor rightDrive = null;
@@ -123,13 +123,13 @@ import java.util.List;
             gyroDrive(DRIVE_SPEED_BOOST,20*-1,-35*teamColor,2);
             gyroTurn(TURN_SPEED_BOOST,0,1 );
             gyroHold(DRIVE_SPEED,0,.5);
-            gyroDrive(.3,16*-1,0,2);
+            gyroDrive(.3,20*-1,0,2);
 
             servoleft.setPosition(0);
             servoright.setPosition(1);
             gyroHold(DRIVE_SPEED,0,1);
 
-            gyroDrive(DRIVE_SPEED_BOOST,33,0,5);
+            gyroDrive(DRIVE_SPEED_BOOST,35,0,5);
 
             servoleft.setPosition(1);
             servoright.setPosition(0);
@@ -146,7 +146,7 @@ import java.util.List;
             }
             sleep(500);
             gyroTurn(TURN_SPEED_BOOST,-90*teamColor,5);
-            gyroDrive(DRIVE_SPEED,25,-90*teamColor,2);
+            gyroDrive(DRIVE_SPEED,20,-90*teamColor,2);
             intakeMotorLeft.setPower(0.0);
             intakeMotorRight.setPower(0.0);
 

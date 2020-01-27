@@ -1,4 +1,5 @@
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
@@ -47,7 +48,7 @@ import java.util.regex.Matcher;
 
 //name of program that shows up on phone,group linear of iterative//
 @Autonomous(name="DetectAndDriveSkystone_Path3_V3", group="Linear Opmode")
-//@Disabled
+@Disabled
 public abstract class DetectAndDriveSkystone_Path3_V3 extends ICE_Controls_2_Motors {
 
     public DetectAndDriveSkystone_Path3_V3(int TeamColor)

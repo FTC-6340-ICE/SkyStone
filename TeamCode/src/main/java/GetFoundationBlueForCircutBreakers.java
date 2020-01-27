@@ -1,5 +1,4 @@
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 ;
 /* Copyright (c) 2017 FIRST. All rights reserved.
@@ -33,11 +32,11 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 //import all assets neccesary//
 
 //name of program that shows up on phone,group linear of iterative//
-@Autonomous(name="BlueAutoV3TwoStone", group="Linear Opmode")
-@Disabled
-public class    DetectAndDriveSkystone_Path3_Blue extends DetectAndDriveSkystone_Path3_V3 {
+@Autonomous(name="GetFoundationBlueForCircutBreakers", group="Linear Opmode")
+//@Disabled
+public class GetFoundationBlueForCircutBreakers extends GetFoundationForCircutBreakers {
 
-    public DetectAndDriveSkystone_Path3_Blue()
+    public GetFoundationBlueForCircutBreakers()
     {
        super(-1);
     }

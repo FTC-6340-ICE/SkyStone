@@ -38,7 +38,7 @@ import org.firstinspires.ftc.teamcode.ICE_Controls_2_Motors;
 
 
 @Autonomous(name="Contingetcy plan for circut", group="Linear Opmode")
-//@Disabled
+@Disabled
 public class Forward_Backward extends ICE_Controls_2_Motors {
 
     private ElapsedTime runtime = new ElapsedTime();

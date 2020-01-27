@@ -70,6 +70,13 @@ public abstract class ICE_Controls_2_Motors extends LinearOpMode {
     protected Servo servoright;
     protected Servo servoCapStone;
     protected Servo servoCapStone2;
+
+   // protected Servo servoUpDown;
+    protected Servo servoLeftRight;
+    protected Servo servoDrop;
+
+
+
 //
 //    protected Servo servoUp;
 
@@ -94,16 +101,18 @@ public abstract class ICE_Controls_2_Motors extends LinearOpMode {
 
     // These constants define the desired driving/control characteristics
     // The can/should be tweaked to suite the specific robot drive train.
-    public final double DRIVE_SPEED = .5;     // Nominal speed for better accuracy.
+    public final double DRIVE_SPEED = .55;     // Nominal speed for better accuracy.
     public final double TURN_SPEED = .5;     // Nominal half speed for better accuracy.
     public final double TURN_SPEED_BOOST = .6;     // Nominal half speed for better accuracy.
+    public final double TURN_SPEED_BOOST_AUTONOMOUS = 0.8;     // Nominal half speed for better accuracy.
+
     public final double HOLD_SPEED = .3;     // Nominal half speed for better accuracy.
     public final double DRIVE_SPEED_BOOST = 0.8;
     public final double DRIVE_SPEED_BOOST_AUTONOMOUS = 1.0;
 
     static final double HEADING_THRESHOLD = 1.5;      // As tight as we can make it with an integer gyro
     static final double P_TURN_COEFF = .009;     // .02 Larger is more responsive, but also less stable
-    static final double P_DRIVE_COEFF = .009;     // .009 Larger is more responsive, but also less stable
+    static final double P_DRIVE_COEFF = .007;     // .009 Larger is more responsive, but also less stable
     static final double P_HOLD_COEFF = .009;
     static final double MIN_TURN_SPEED = .15;
     //
@@ -155,8 +164,11 @@ public abstract class ICE_Controls_2_Motors extends LinearOpMode {
         // ??? = hardwareMap.get(Servo.class, "???");
         servoright = hardwareMap.get(Servo.class, "rightFoundation");
         servoleft = hardwareMap.get(Servo.class, "leftFoundation");
-       // servoUp = hardwareMap.get(Servo.class,"servoUp");
-        servoCapStone = hardwareMap.get(Servo.class,"servoCapstone3");
+       //servoUpDown = hardwareMap.get(Servo.class,"servoud");
+       servoLeftRight = hardwareMap.get(Servo.class,"servolr");
+         servoDrop = hardwareMap.get(Servo.class,"servodrop");
+
+        //servoCapStone = hardwareMap.get(Servo.class,"servoCapstone3");
        // servoCapStone2 = hardwareMap.get(Servo.class,"servoCapstone4");
 
         //
@@ -638,7 +650,23 @@ public abstract class ICE_Controls_2_Motors extends LinearOpMode {
         intakeMotorLeft.setPower(-1.0);
         intakeMotorRight.setPower(-1.0);
 
+
+
+
     }
+    public void inTakeStoneAutonomous(){
+        intakeMotorLeft.setPower(-1.0);
+        intakeMotorRight.setPower(-1.0);
+
+
+
+    }
+
+
+
+
+
+
     public void inTakeStone(boolean turnOnlyOneAtIntake,int teamColor){
         if(turnOnlyOneAtIntake)
         {

@@ -1,4 +1,5 @@
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 ;
 /* Copyright (c) 2017 FIRST. All rights reserved.
@@ -32,12 +33,12 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 //import all assets neccesary//
 
 //name of program that shows up on phone,group linear of iterative//
-@Autonomous(name="GetFoundationBlueV2WithVurforia", group="Linear Opmode")
-//@Disabled
-public class GetFoundationBlueV2 extends GetFoundationV2WithVufroria {
+@Autonomous(name="GetFoundationRedForCircutBreakersV2", group="Linear Opmode")
+@Disabled
+public class GetFoundationRedForCircutBreakersV2 extends GetFoundationForCircutBreakersV2{
 
-    public GetFoundationBlueV2()
+    public GetFoundationRedForCircutBreakersV2()
     {
-       super(-1);
+       super(1);
     }
 }

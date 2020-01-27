@@ -34,6 +34,8 @@ public class FWDPOV extends ICE_Controls_2_Motors {
     @Override
     public void runOpMode() {
         initializeHardware();
+        servoLeftRight.setPosition(0.0);
+
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
@@ -89,6 +91,8 @@ public class FWDPOV extends ICE_Controls_2_Motors {
                 stopInTakeStone();
             }
 
+
+
             if (gamepad2.a) {
                 inTakeStone();
 
@@ -122,23 +126,57 @@ public class FWDPOV extends ICE_Controls_2_Motors {
                     rightMotor.setPower(rightTurboPower);
 
             }
-            if (gamepad1.b) {
-                servoCapStone.setPosition(0.0);
+            if (gamepad2.dpad_down) {
+                //servoDrop.setPosition(1.0);
+                servoLeftRight.setPosition(-0.5);
 
             }
-            if (gamepad1.a) {
-                servoCapStone.setPosition(1.0);
+            if (gamepad2.dpad_up) {
+                //servoDrop.setPosition(1.0);
+                servoLeftRight.setPosition(1.0);
 
             }
-            if (gamepad1.y) {
-                servoCapStone2.setPosition(0.0);
+
+
+
+            if (gamepad2.dpad_down) {
+//                servoUpDown.setPosition(0.0);
+               // sleep(500);
+                servoLeftRight.setPosition(0.0);
 
             }
-            if (gamepad1.x) {
+            if (gamepad2.dpad_left) {
+                //servoDrop.setPosition(1.0);
+  //             servoUpDown.setPosition(1.0);
+                servoLeftRight.setPosition(0.3);
+             //   servoDrop.setPosition(0.0);
+
+            }
+
+            if (gamepad2.back) {
+                //servoDrop.setPosition(1.0);
+                //             servoUpDown.setPosition(1.0);
+                servoDrop.setPosition(0.0);
+                //   servoDrop.setPosition(0.0);
+
+            }
+            else{
+    //        if (gamepad2.start) {
+                //servoDrop.setPosition(1.0);
+                //             servoUpDown.setPosition(1.0);
+                servoDrop.setPosition(1.0);
+                //   servoDrop.setPosition(0.0);
+
+            }
+
+
+
+
+           /* if (gamepad1.x) {
                 servoCapStone2.setPosition(1.0);
 
             }
-
+*/
 
 
 

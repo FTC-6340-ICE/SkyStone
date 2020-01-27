@@ -45,7 +45,7 @@ import org.firstinspires.ftc.teamcode.ICE_Controls_2_Motors;
 
 
 @Autonomous(name="Gyrotest", group="Linear Opmode")
-//@Disabled
+@Disabled
     public class Gyrotest extends ICE_Controls_2_Motors {
         // Declare OpMode members.
         private ElapsedTime runtime = new ElapsedTime();
@@ -53,12 +53,12 @@ import org.firstinspires.ftc.teamcode.ICE_Controls_2_Motors;
         //private DcMotor rightDrive = null;
         //DcMotor leftMotor;
         //DcMotor rightMotor;
-        private VuforiaLocalizer vuforia;
-    public VuforiaStuff vuforiaStuff;
+     //   private VuforiaLocalizer vuforia;
+   // public VuforiaStuff vuforiaStuff;
         @Override
         public void runOpMode() {
         //initializeHardware();
-            int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+     /*       int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
             VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
 
             parameters.vuforiaLicenseKey = VUFORIA_KEY;
@@ -72,7 +72,7 @@ import org.firstinspires.ftc.teamcode.ICE_Controls_2_Motors;
 
             telemetry.addData("Position of Stone" , pos );
             telemetry.update();
-
+*/
 
 
 
@@ -95,7 +95,7 @@ import org.firstinspires.ftc.teamcode.ICE_Controls_2_Motors;
 //sleep(1500);
   //        servoright.setPosition(1);
     //gyroDrive(DRIVE_SPEED,12,0,5);
-            while(opModeIsActive()) {
+  /*          while(opModeIsActive()) {
                 gyroHold(DRIVE_SPEED, 0, 2);
                 telemetry.addData("movecountsintakemotorRIght", intakeMotorRight.getCurrentPosition());
                 telemetry.addData("movecountsIntakeMotorLeft", intakeMotorLeft.getCurrentPosition());
@@ -106,7 +106,7 @@ import org.firstinspires.ftc.teamcode.ICE_Controls_2_Motors;
                 sleep(3000);
 
             }
-
+*/
 
             //        servoleft.setPosition(0);
     // servoleft.setPostio

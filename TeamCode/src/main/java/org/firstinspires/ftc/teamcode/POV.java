@@ -106,6 +106,7 @@ public class POV extends ICE_Controls_2Motors {
 
                 // Send calculated power to wheels
                 leftMotor.setPower(leftPower);
+
                 rightMotor.setPower(rightPower);
 
                 // Show the elapsed game time and wheel power.

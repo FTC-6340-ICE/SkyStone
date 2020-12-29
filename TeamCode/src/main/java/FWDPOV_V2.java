@@ -1,4 +1,3 @@
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -24,9 +23,9 @@ import org.firstinspires.ftc.teamcode.ICE_Controls_2_Motors;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="FWDPOV", group="Linear Opmode")
-@Disabled
-public class FWDPOV extends ICE_Controls_2_Motors {
+@TeleOp(name="FWDPOV_V2", group="Linear Opmode")
+//@Disabled
+public class FWDPOV_V2 extends ICE_Controls_2_Motors {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -35,7 +34,7 @@ public class FWDPOV extends ICE_Controls_2_Motors {
     @Override
     public void runOpMode() {
         initializeHardware();
-       servoLeftRight.setPosition(0.0);
+        servoLeftRight.setPosition(0.0);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -77,7 +76,7 @@ public class FWDPOV extends ICE_Controls_2_Motors {
             rightTurboPower = Range.clip(drive - turn, -1 * turboMaxSpeed, turboMaxSpeed);
 
             //  if (gamepad1.a) {
-           // servoleft.setPosition(0.25);
+            // servoleft.setPosition(0.25);
 
             //}
             //if (gamepad1.b) {
@@ -119,74 +118,62 @@ public class FWDPOV extends ICE_Controls_2_Motors {
             }
 
             if (gamepad1.right_trigger < .5) {
-                    // Send calculated power to wheels
-                    leftMotor.setPower(leftPower);
-                    rightMotor.setPower(rightPower);
+                leftMotor.setPower(leftPower);
+                rightMotor.setPower(rightPower);
             } else {
-                    leftMotor.setPower(leftTurboPower);
-                    rightMotor.setPower(rightTurboPower);
+                leftMotor.setPower(leftTurboPower);
+                rightMotor.setPower(rightTurboPower);
 
             }
             if (gamepad2.dpad_down) {
-                //servoDrop.setPosition(1.0);
-        servoLeftRight.setPosition(-0.5);
+                servoLeftRight.setPosition(-0.5);
 
             }
             if (gamepad2.dpad_up) {
-                //servoDrop.setPosition(1.0);
-               servoLeftRight.setPosition(1.0);
+                servoLeftRight.setPosition(1.0);
 
             }
 
 
 
             if (gamepad2.dpad_down) {
-//                servoUpDown.setPosition(0.0);
-               // sleep(500);
-               servoLeftRight.setPosition(0.0);
+                servoLeftRight.setPosition(0.0);
 
-          }
+            }
             if (gamepad2.dpad_left) {
-                //servoDrop.setPosition(1.0);
-  //             servoUpDown.setPosition(1.0);
                 servoLeftRight.setPosition(0.3);
-             //   servoDrop.setPosition(0.0);
 
             }
 
             if (gamepad2.back) {
-                //servoDrop.setPosition(1.0);
-                //             servoUpDown.setPosition(1.0);
                 servoDrop.setPosition(0.0);
-                //   servoDrop.setPosition(0.0);
 
             }
             else{
-    //        if (gamepad2.start) {
-                //servoDrop.setPosition(1.0);
-                //             servoUpDown.setPosition(1.0);
                 servoDrop.setPosition(1.0);
-                //   servoDrop.setPosition(0.0);
+
+            }
+
+            if (gamepad1.dpad_down) {
+                servoGiddyUp.setPosition(0.0);
+
+            }
+            if (gamepad1.dpad_up) {
+              servoGiddyUp.setPosition(1.0);
 
             }
 
 
 
-
-           /* if (gamepad1.x) {
-                servoCapStone2.setPosition(1.0);
-
-            }
-*/
 
 
 
 
             // Show the elapsed game time and wheel power.
-                telemetry.addData("Status", "Run Time: " + runtime.toString());
-                telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
-                telemetry.update();
-            }
+            telemetry.addData("Status", "Run Time: " + runtime.toString());
+            telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
+            telemetry.update();
         }
     }
+}
 

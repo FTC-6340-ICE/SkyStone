@@ -1,14 +1,10 @@
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.teamcode.ICE_Controls_2Motors;
 import org.firstinspires.ftc.teamcode.ICE_Controls_2_Motors;
+import org.firstinspires.ftc.teamcode.ICE_Controls_4_Motors;
 
 
 /**
@@ -24,9 +20,9 @@ import org.firstinspires.ftc.teamcode.ICE_Controls_2_Motors;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="FWDPOV", group="Linear Opmode")
-@Disabled
-public class FWDPOV extends ICE_Controls_2_Motors {
+@TeleOp(name="MecanumPOV", group="Linear Opmode")
+//@Disabled
+public class MecanumPoV extends ICE_Controls_4_Motors {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -35,21 +31,11 @@ public class FWDPOV extends ICE_Controls_2_Motors {
     @Override
     public void runOpMode() {
         initializeHardware();
-       servoLeftRight.setPosition(0.0);
+        servoLeftRight.setPosition(0.0);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        // Initialize the hardware variables. Note that the strings used here as parameters
-        // to 'get' must correspond to the names assigned during the robot configuration
-        // step (using the FTC Robot Controller app on the phone).
-        // Most robots need the motor on one side to be reversed to drive forward
-        // Reverse the motor that runs backwards when connected directly to the battery
-        leftMotor.setDirection(DcMotor.Direction.REVERSE);
-        rightMotor.setDirection(DcMotor.Direction.FORWARD);
-        intakeMotorLeft.setDirection(DcMotor.Direction.REVERSE);
-        intakeMotorRight.setDirection(DcMotor.Direction.FORWARD);
-        // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
 
@@ -76,35 +62,46 @@ public class FWDPOV extends ICE_Controls_2_Motors {
             leftTurboPower = Range.clip(drive + turn, -1 * turboMaxSpeed, turboMaxSpeed);
             rightTurboPower = Range.clip(drive - turn, -1 * turboMaxSpeed, turboMaxSpeed);
 
-            //  if (gamepad1.a) {
-           // servoleft.setPosition(0.25);
-
-            //}
-            //if (gamepad1.b) {
-            //servoleft.setPosition(1);
 
 
-            //
 
-            if (digitalTouch.getState() == true) {
-                telemetry.addData("Digital Touch", "Is Not Pressed");
-            } else {
-                stopInTakeStone();
+
+
+
+
+
+            if(gamepad1.right_bumper) {
+                rightMotorFront.setPower(-1.0);
+                rightMotorBack.setPower(1.0);
+                leftMotorBack.setPower(-1.0);
+                leftMotorFront.setPower(1.0);
+            }
+
+            if(gamepad1.left_bumper) {
+                rightMotorFront.setPower(1.0);
+                rightMotorBack.setPower(-1.0);
+                leftMotorBack.setPower(1.0);
+                leftMotorFront.setPower(-1.0);
+            }
+            if(!gamepad1.left_bumper && !gamepad1.right_bumper && gamepad1.right_trigger < .5   ) {
+
+                rightMotorFront.setPower(rightPower);
+                rightMotorBack.setPower(rightPower);
+                leftMotorBack.setPower(leftPower);
+                leftMotorFront.setPower(leftPower);
+
             }
 
 
 
-            if (gamepad2.a) {
-                inTakeStone();
 
-            }
-            if (gamepad2.y) {
-                ouTakeStone();
-            }
 
-            if (gamepad2.x) {
-                stopInTakeStone();
-            }
+
+
+
+
+
+
 
             if (gamepad2.right_bumper){
                 servoleft.setPosition(1);
@@ -118,75 +115,62 @@ public class FWDPOV extends ICE_Controls_2_Motors {
 
             }
 
-            if (gamepad1.right_trigger < .5) {
-                    // Send calculated power to wheels
-                    leftMotor.setPower(leftPower);
-                    rightMotor.setPower(rightPower);
-            } else {
-                    leftMotor.setPower(leftTurboPower);
-                    rightMotor.setPower(rightTurboPower);
+            if (gamepad1.right_trigger > .5) {
+                leftMotorBack.setPower(leftTurboPower);
+                rightMotorBack.setPower(rightTurboPower);
+                leftMotorFront.setPower(leftTurboPower);
+                rightMotorFront.setPower(rightTurboPower);
 
             }
             if (gamepad2.dpad_down) {
-                //servoDrop.setPosition(1.0);
-        servoLeftRight.setPosition(-0.5);
+                servoLeftRight.setPosition(-0.5);
 
             }
             if (gamepad2.dpad_up) {
-                //servoDrop.setPosition(1.0);
-               servoLeftRight.setPosition(1.0);
+                servoLeftRight.setPosition(1.0);
 
             }
 
 
 
             if (gamepad2.dpad_down) {
-//                servoUpDown.setPosition(0.0);
-               // sleep(500);
-               servoLeftRight.setPosition(0.0);
+                servoLeftRight.setPosition(0.0);
 
-          }
+            }
             if (gamepad2.dpad_left) {
-                //servoDrop.setPosition(1.0);
-  //             servoUpDown.setPosition(1.0);
                 servoLeftRight.setPosition(0.3);
-             //   servoDrop.setPosition(0.0);
 
             }
 
             if (gamepad2.back) {
-                //servoDrop.setPosition(1.0);
-                //             servoUpDown.setPosition(1.0);
                 servoDrop.setPosition(0.0);
-                //   servoDrop.setPosition(0.0);
 
             }
             else{
-    //        if (gamepad2.start) {
-                //servoDrop.setPosition(1.0);
-                //             servoUpDown.setPosition(1.0);
                 servoDrop.setPosition(1.0);
-                //   servoDrop.setPosition(0.0);
+
+            }
+
+            if (gamepad1.dpad_down) {
+                servoGiddyUp.setPosition(0.0);
+
+            }
+            if (gamepad1.dpad_up) {
+              servoGiddyUp.setPosition(1.0);
 
             }
 
 
 
-
-           /* if (gamepad1.x) {
-                servoCapStone2.setPosition(1.0);
-
-            }
-*/
 
 
 
 
             // Show the elapsed game time and wheel power.
-                telemetry.addData("Status", "Run Time: " + runtime.toString());
-                telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
-                telemetry.update();
-            }
+            telemetry.addData("Status", "Run Time: " + runtime.toString());
+            telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
+            telemetry.update();
         }
     }
+}
 

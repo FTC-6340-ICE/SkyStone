@@ -28,6 +28,7 @@
  */
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
@@ -43,7 +44,7 @@ import java.util.List;
 
 
 @Autonomous(name="GetFoundation", group="Linear Opmode")
-//@Disabled
+@Disabled
     public abstract class GetFoundation extends ICE_Controls_2_Motors {
         // Declare OpMode members.
         public GetFoundation(int TeamColor)
@@ -123,13 +124,13 @@ import java.util.List;
             gyroDrive(DRIVE_SPEED_BOOST,20*-1,-35*teamColor,2);
             gyroTurn(TURN_SPEED_BOOST,0,1 );
             gyroHold(DRIVE_SPEED,0,.5);
-            gyroDrive(.3,20*-1,0,2);
+            gyroDrive(.3,22*-1,0,2);
 
             servoleft.setPosition(0);
             servoright.setPosition(1);
             gyroHold(DRIVE_SPEED,0,1);
 
-            gyroDrive(DRIVE_SPEED_BOOST,35,0,5);
+            gyroDrive(DRIVE_SPEED_BOOST,37,0,5);
 
             servoleft.setPosition(1);
             servoright.setPosition(0);

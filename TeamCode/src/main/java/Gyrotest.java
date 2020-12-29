@@ -35,6 +35,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.teamcode.ICE_Controls_4_Motors;
 import org.firstinspires.ftc.teamcode.VuforiaStuff;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -45,10 +46,11 @@ import org.firstinspires.ftc.teamcode.ICE_Controls_2_Motors;
 
 
 @Autonomous(name="Gyrotest", group="Linear Opmode")
-@Disabled
-    public class Gyrotest extends ICE_Controls_2_Motors {
+//@Disabled
+    public class Gyrotest extends ICE_Controls_4_Motors {
         // Declare OpMode members.
         private ElapsedTime runtime = new ElapsedTime();
+
         // private DcMotor leftDrive = null;
         //private DcMotor rightDrive = null;
         //DcMotor leftMotor;
@@ -57,7 +59,7 @@ import org.firstinspires.ftc.teamcode.ICE_Controls_2_Motors;
    // public VuforiaStuff vuforiaStuff;
         @Override
         public void runOpMode() {
-        //initializeHardware();
+        initializeHardware();
      /*       int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
             VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
 
@@ -80,6 +82,15 @@ import org.firstinspires.ftc.teamcode.ICE_Controls_2_Motors;
             waitForStart();
 
             runtime.reset();
+
+
+
+
+
+
+
+
+
             //leftMotor.setTargetPositionTolerance(1);
             //rightMotor.setTargetPositionTolerance(1);
             //telemetry.addData("Status", "G1");
@@ -95,18 +106,14 @@ import org.firstinspires.ftc.teamcode.ICE_Controls_2_Motors;
 //sleep(1500);
   //        servoright.setPosition(1);
     //gyroDrive(DRIVE_SPEED,12,0,5);
-  /*          while(opModeIsActive()) {
+            while(opModeIsActive()) {
                 gyroHold(DRIVE_SPEED, 0, 2);
-                telemetry.addData("movecountsintakemotorRIght", intakeMotorRight.getCurrentPosition());
-                telemetry.addData("movecountsIntakeMotorLeft", intakeMotorLeft.getCurrentPosition());
-                telemetry.addData("movecountsLeftMotor", leftMotor.getCurrentPosition());
-                telemetry.addData("movecountsRightMotor", rightMotor.getCurrentPosition());
-
+                telemetry.addData("movecountsrightMotorback", rightMotorBack.getCurrentPosition());
                 telemetry.update();
                 sleep(3000);
 
             }
-*/
+
 
             //        servoleft.setPosition(0);
     // servoleft.setPostio

@@ -28,6 +28,7 @@
  */
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
@@ -44,7 +45,7 @@ import java.util.List;
 
 
 @Autonomous(name="GetFoundationV2WithVuforia", group="Linear Opmode")
-//@Disabled
+@Disabled
     public abstract class GetFoundationV2WithVufroria extends ICE_Controls_2_Motors {
     // Declare OpMode members.
     public GetFoundationV2WithVufroria(int TeamColor) {

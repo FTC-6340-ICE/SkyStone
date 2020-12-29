@@ -28,6 +28,7 @@
  */
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
@@ -43,7 +44,7 @@ import java.util.List;
 
 
 @Autonomous(name="GetFoundationForCircutBreakers", group="Linear Opmode")
-//@Disabled
+@Disabled
     public abstract class GetFoundationForCircutBreakers extends ICE_Controls_2_Motors {
     // Declare OpMode members.
     public GetFoundationForCircutBreakers(int TeamColor) {
@@ -73,12 +74,12 @@ import java.util.List;
         // gyroHold(DRIVE_SPEED,0,1);
        if(teamColor == 1) {
            gyroTurn(TURN_SPEED_BOOST, -35 * teamColor, 1);
-           gyroDrive(DRIVE_SPEED_BOOST, 20 * -1, -35 * teamColor, 2);
+           gyroDrive(DRIVE_SPEED_BOOST, 22 * -1, -35 * teamColor, 2);
        }
        else {
            gyroTurn(TURN_SPEED_BOOST, -45 * teamColor, 1);
 
-           gyroDrive(DRIVE_SPEED_BOOST, 20 * -1, -45 * teamColor, 2);
+           gyroDrive(DRIVE_SPEED_BOOST, 22 * -1, -45 * teamColor, 2);
        }
         // gyroDrive(.3,15*-1,,2);
         //gyroDriveStopOnTouchSensor(.3,15*-1,0,2);
@@ -92,7 +93,7 @@ import java.util.List;
         servoright.setPosition(1);
         gyroHold(DRIVE_SPEED, 0, 1);
 
-        gyroDrive(DRIVE_SPEED_BOOST, 35, 0, 5);
+        gyroDrive(DRIVE_SPEED_BOOST, 37, 0, 5);
 
         servoleft.setPosition(1);
         servoright.setPosition(0);
